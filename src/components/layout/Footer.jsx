@@ -32,7 +32,7 @@ function Footer() {
 
   const lang = i18n?.language && i18n.language.startsWith("bn") ? "bn" : "en";
   return (
-    <footer className="bg-[var(--text-brown-strong)] text-[var(--bg-cream)]">
+    <footer className="bg-[#2C1F18] text-[var(--bg-cream)]">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-4 lg:px-8">
         <div>
           <div className="mb-4 text-white">

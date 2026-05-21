@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { ArrowLeft } from "lucide-react";
 
 function HeroSection() {
+  const { t } = useTranslation();
   const [fund, setFund] = useState("");
   const [contact, setContact] = useState("");
   const [amount, setAmount] = useState("");
   const [status, setStatus] = useState("");
+  const [donationExpanded, setDonationExpanded] = useState(false);
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -21,15 +24,22 @@ function HeroSection() {
   return (
     <section className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
       <div className="relative overflow-hidden rounded-2xl border border-[color:var(--tan-secondary)]/60 bg-[var(--bg-cream-soft)] shadow-[0_18px_50px_rgba(74,37,17,0.08)]">
-        <div className="grid min-h-[640px] lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="relative flex items-end p-6 sm:p-10 lg:p-14">
+        <div className={`grid min-h-[640px] ${
+          donationExpanded
+            ? "lg:grid-cols-[0fr_1fr]"
+            : "lg:grid-cols-[1.1fr_0.9fr]"
+        }`}>
+          <div className={`relative flex items-end p-6 sm:p-10 lg:p-14 transition-all duration-500 ease-in-out ${
+            donationExpanded
+              ? "lg:overflow-hidden lg:w-0 lg:invisible lg:opacity-0 lg:p-0"
+              : "lg:w-auto lg:visible lg:opacity-100"
+          }`}>
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(224,169,109,0.3),transparent_35%),linear-gradient(135deg,#fff5eb_0%,#faf0e6_48%,#f3dfc6_100%)]" />
             <div className="absolute left-8 top-10 h-24 w-24 rounded-full border border-[color:var(--tan-secondary)] bg-white/60" />
             <div className="absolute bottom-12 right-10 h-40 w-40 rounded-[1.75rem] border border-[color:var(--tan-secondary)] bg-[rgba(255,245,235,0.8)]" />
             <div className="absolute left-1/2 top-10 h-28 w-28 -translate-x-1/2 rounded-full border border-dashed border-[color:var(--tan-muted)]/80 bg-white/30" />
 
             {(() => {
-              const { t, i18n } = useTranslation();
               return (
                 <div className="relative z-10 max-w-2xl space-y-6 rounded-2xl border border-[color:var(--tan-secondary)]/65 bg-white/75 p-6 backdrop-blur-sm sm:p-8">
                   <span className="inline-flex rounded-full border border-[color:var(--tan-secondary)] bg-[var(--bg-cream)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-brown-strong)]">
@@ -50,7 +60,8 @@ function HeroSection() {
                   <div className="flex flex-wrap gap-3">
                     <button
                       type="button"
-                      className="rounded-lg bg-[var(--accent-terracotta)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--accent-terracotta-dark)]"
+                      onClick={() => setDonationExpanded(true)}
+                      className="rounded-lg bg-[var(--accent-terracotta)] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--accent-terracotta-dark)] hover:shadow-md"
                     >
                       {t("donate", "Donate Now")}
                     </button>
@@ -81,8 +92,22 @@ function HeroSection() {
             })()}
           </div>
 
-          <div className="relative border-t border-[color:var(--tan-secondary)]/45 lg:border-l lg:border-t-0">
+          <div className={`relative border-t border-[color:var(--tan-secondary)]/45 lg:border-l lg:border-t-0 transition-all duration-500 ease-in-out ${
+            donationExpanded
+              ? "lg:border-l-0"
+              : ""
+          }`}>
             <div className="flex h-full flex-col justify-between gap-6 p-6 sm:p-10 lg:p-14">
+              {donationExpanded && (
+                <button
+                  type="button"
+                  onClick={() => setDonationExpanded(false)}
+                  className="absolute left-4 top-4 z-10 flex items-center gap-1.5 rounded-full border border-[color:var(--tan-secondary)] bg-[var(--bg-cream)] px-3 py-1.5 text-xs font-medium text-[var(--text-brown)] shadow-sm transition hover:bg-[var(--bg-cream-soft)]"
+                >
+                  <ArrowLeft className="h-3.5 w-3.5" />
+                  {t("back", "Back")}
+                </button>
+              )}
               <form
                 className="space-y-4 rounded-2xl border border-[color:var(--tan-secondary)] bg-white p-5 shadow-sm"
                 onSubmit={handleSubmit}
