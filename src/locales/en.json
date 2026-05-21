@@ -1,0 +1,34 @@
+{
+  "contact": {
+    "phone": "+8801789345723",
+    "email": "info@novoculture.org",
+    "address": "Shaheed Syed Nazrul Islam Administrative Building, University of Rajshahi"
+  },
+  "language": "Language",
+  "nav": {
+    "home": "Home",
+    "about": "About Us",
+    "projects": "Projects",
+    "media": "Media",
+    "contact": "Contact"
+  },
+  "donate": "Donate Now",
+  "read_more": "Read more",
+  "projects_label": "Projects",
+  "projects_heading": "NovoCulture project updates",
+  "projects_description": "These two posts have been added as structured project updates so the site now reflects your actual community activity rather than a generic placeholder page.",
+  "recent_updates": "Recent NovoCulture updates",
+  "hero_tagline": "Explore. Support. Inspire.",
+  "hero_title": "NovoCulture homepage structure",
+  "hero_description": "Warm, educational, and culturally grounded presentation for outreach, donation drives, and community programs across the foundation.",
+  "learn_more": "Learn More",
+  "community_outreach": "Community outreach",
+  "transparent_giving": "Transparent giving",
+  "education_support": "Education support",
+  "warm_palette": "Warm cream palette",
+  "subscribe_newsletter": "Subscribe for regular newsletter",
+  "enter_email": "Enter your email",
+  "subscribe": "Subscribe",
+  "back_to_projects": "Back to projects",
+  "project_not_found": "Project not found."
+}
