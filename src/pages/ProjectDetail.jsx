@@ -2,147 +2,146 @@ import { useParams, Link } from "react-router-dom";
 import { projects } from "../data/projects.js";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
-import { getProject as fetchProject } from "../services/firestore";
+import { getProject as fetchProject, getHeroUpdate } from "../services/firestore";
+import { Loader2, Calendar, ArrowLeft } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 function ProjectDetail() {
   const { id } = useParams();
   const { i18n, t } = useTranslation();
-  const project = projects.find((p) => p.id === id);
-
-  const [remoteProject, setRemoteProject] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [sourceProject, setSourceProject] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const lang = i18n.language.startsWith("bn") ? "bn" : "en";
 
   useEffect(() => {
-    if (project) return; // already have local
-    let cancelled = false;
-    setLoading(true);
-    fetchProject(id)
-      .then((p) => {
-        if (cancelled) return;
-        setRemoteProject(p);
-      })
-      .catch((err) => {
-        if (cancelled) return;
-        setError(err.message || String(err));
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
+    async function loadProject() {
+      setLoading(true);
+      try {
+        // 1. Try local projects
+        const local = projects.find((p) => p.id === id);
+        if (local) {
+          setSourceProject(local);
+          return;
+        }
 
-    return () => {
-      cancelled = true;
-    };
-  }, [id, project]);
+        // 2. Try 'projects' collection
+        const remote = await fetchProject(id);
+        if (remote) {
+          setSourceProject(remote);
+          return;
+        }
 
-  // Determine source: prefer local, else remote
-  const sourceProject = project || remoteProject;
+        // 3. Try 'heroUpdates' collection
+        const update = await getHeroUpdate(id);
+        if (update) {
+          setSourceProject(update);
+          return;
+        }
 
-  if (!sourceProject) {
-    if (loading) {
-      return (
-        <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-          <p>Loading...</p>
-        </section>
-      );
+        setError("প্রজেক্টটি পাওয়া যায়নি।");
+      } catch (err) {
+        console.error(err);
+        setError("ডেটা লোড করতে সমস্যা হয়েছে।");
+      } finally {
+        setLoading(false);
+      }
     }
+    loadProject();
+  }, [id]);
 
+  if (loading) {
     return (
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <p>{t("project_not_found", "Project not found.")}</p>
-        {error ? <p className="text-sm text-red-600">{error}</p> : null}
-        <Link to="/projects" className="text-(--accent-terracotta)">
-          {t("back_to_projects", "Back to projects")}
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="h-10 w-10 animate-spin text-[var(--accent-terracotta)]" />
+      </div>
+    );
+  }
+
+  if (error || !sourceProject) {
+    return (
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 text-center">
+        <h2 className="text-2xl font-bold text-black mb-4">{error || "প্রজেক্ট পাওয়া যায়নি।"}</h2>
+        <Link to="/projects" className="inline-flex items-center gap-2 text-[var(--accent-terracotta)] font-bold hover:underline">
+          <ArrowLeft className="h-4 w-4" />
+          {t("back_to_projects", "প্রজেক্ট লিস্টে ফিরে যান")}
         </Link>
       </section>
     );
   }
 
-  const lang =
-    i18n.language && sourceProject[i18n.language] ? i18n.language : "en";
-  const p = sourceProject[lang] || sourceProject.en || {};
-  const timeline =
-    sourceProject.updated_at ||
-    sourceProject.created_at ||
-    sourceProject.date ||
-    p.date;
-  const heroImage = p.image || sourceProject.image;
+  // Handle both old 'projects' structure and new 'heroUpdates' structure
+  const title = sourceProject.bn?.title || sourceProject.en?.title || sourceProject.title || "";
+  const content = sourceProject.bn?.content || sourceProject.en?.content || sourceProject.summary || sourceProject.description || "";
+  const image = sourceProject.image || sourceProject.bn?.image || sourceProject.en?.image;
+  const date = sourceProject.date || sourceProject.created_at;
+
+  const isDonation = sourceProject.category === "donations";
+  const backPath = isDonation ? "/funds" : "/projects";
+  const backLabel = isDonation 
+    ? t("back_to_funds", "তহবিল লিস্টে ফিরে যান") 
+    : t("back_to_projects", "প্রজেক্ট লিস্টে ফিরে যান");
 
   return (
-    <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
-      <div className="mb-6">
+    <section className="mx-auto max-w-4xl px-4 py-12 sm:py-20 sm:px-6 lg:px-8">
+      <div className="mb-12">
         <Link
-          to="/projects"
-          className="inline-flex items-center gap-2 text-sm font-medium text-(--text-brown)/70 hover:text-(--accent-terracotta)"
+          to={backPath}
+          className="group inline-flex items-center gap-2 text-sm font-black uppercase tracking-widest text-[var(--accent-terracotta)] hover:opacity-70 transition-all"
         >
-          <span>←</span>
-          <span>{t("back_to_projects", "Back to projects")}</span>
+          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
+          <span>{backLabel}</span>
         </Link>
       </div>
 
-      <div className="grid gap-8">
-        <div>
-          {heroImage ? (
-            <div className="mb-6 overflow-hidden rounded-2xl border border-(--tan-secondary) bg-white shadow-sm">
-              <img
-                src={heroImage}
-                alt={p.title}
-                className="h-80 w-full object-cover sm:h-100"
-              />
-            </div>
-          ) : null}
+      <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        {image && (
+          <div className="aspect-video w-full overflow-hidden rounded-[2.5rem] border-4 border-white shadow-2xl">
+            <img src={image} alt={title} className="h-full w-full object-cover" />
+          </div>
+        )}
 
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-(--text-brown)/70">
-            {p.subtitle}
-          </p>
-          <h1 className="mt-2 text-3xl font-extrabold leading-tight text-(--text-brown-strong) sm:text-5xl">
-            {p.title}
-          </h1>
-
-          <article className="mt-8 rounded-2xl border border-(--tan-secondary) bg-white p-6 shadow-sm sm:p-8">
-            <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-(--text-brown)/60">
-              {t("project_body", "Project body")}
-            </h2>
-            <div className="mt-4 space-y-4 text-base leading-8 text-(--text-brown)/85 sm:text-lg">
-              {p.description
-                ? p.description
-                    .split("\n")
-                    .map((line, idx) =>
-                      line.trim() ? <p key={idx}>{line}</p> : null,
-                    )
-                : Array.isArray(p.details)
-                  ? p.details.map((detail) => <p key={detail}>• {detail}</p>)
-                  : null}
+        <div className="space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="bg-[var(--accent-terracotta)] text-white text-[10px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-full shadow-lg shadow-orange-500/20">
+              {isDonation ? t("donation_fund", "Donation Fund") : t("project_update", "Project Update")}
             </div>
-          </article>
-        </div>
-      </div>
-
-      <div className="mt-8 rounded-2xl border border-(--tan-secondary) bg-white p-5 shadow-sm">
-        <div className="text-xs font-semibold uppercase tracking-[0.2em] text-(--text-brown)/60">
-          {t("project_info", "Project info")}
-        </div>
-        <div className="mt-4 space-y-4 text-sm text-(--text-brown)/85">
-          <div>
-            <div className="text-xs text-(--text-brown)/60">
-              {t("published", "Published")}
-            </div>
-            <div className="mt-1 font-medium text-(--text-brown-strong)">
-              {timeline ? "" + timeline : ""}
-            </div>
+            {date && (
+              <div className="flex items-center gap-1.5 text-xs font-bold text-black/40 uppercase tracking-widest">
+                <Calendar className="h-3.5 w-3.5" />
+                {new Date(date).toLocaleDateString(lang === "bn" ? "bn-BD" : "en-US", { month: "long", day: "numeric", year: "numeric" })}
+              </div>
+            )}
           </div>
 
-          {p.tone ? (
-            <div>
-              <div className="text-xs text-(--text-brown)/60">
-                {t("tone", "Tone")}
-              </div>
-              <div className="mt-1 font-medium text-(--text-brown-strong)">
-                {p.tone}
-              </div>
-            </div>
-          ) : null}
+          <h1 className="text-4xl sm:text-6xl font-black text-black tracking-tighter leading-[1.1]">
+            {title}
+          </h1>
+
+          <div className="h-1.5 w-20 bg-[var(--accent-terracotta)] rounded-full" />
+
+          <div className="prose prose-lg max-w-none text-black/80 font-medium">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {content}
+            </ReactMarkdown>
+          </div>
         </div>
+
+        {/* Detailed content for old projects structure if available */}
+        {sourceProject[lang]?.details && Array.isArray(sourceProject[lang].details) && (
+          <div className="bg-white rounded-[2rem] p-8 sm:p-12 border-2 border-black/5 shadow-xl">
+            <h3 className="text-2xl font-black text-black mb-8">বিস্তারিত তথ্য</h3>
+            <ul className="space-y-4">
+              {sourceProject[lang].details.map((detail, i) => (
+                <li key={i} className="flex items-start gap-4 text-lg text-black/70 font-medium">
+                  <div className="h-2 w-2 rounded-full bg-[var(--accent-terracotta)] mt-2.5 shrink-0" />
+                  <span>{detail}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </section>
   );

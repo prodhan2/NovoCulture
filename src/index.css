@@ -1,27 +1,16 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap");
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 :root {
   --bg-cream: #FFF8F0;
   --bg-cream-soft: #FFFAF5;
-  --text-brown: #5C3D2E;
-  --text-brown-strong: #3E2723;
-  --accent-terracotta: #D96B27;
-  --accent-terracotta-dark: #C85A17;
-  --tan-secondary: #E0A96D;
-  --tan-muted: #C78B58;
-}
-
-/* Dark mode */
-[data-theme="dark"] {
-  --bg-cream: #1C1814;
-  --bg-cream-soft: #231E19;
-  --text-brown: #D4C5B5;
-  --text-brown-strong: #EDE0D0;
-  --accent-terracotta: #E8844A;
-  --accent-terracotta-dark: #D96B27;
-  --tan-secondary: #B8926A;
-  --tan-muted: #9A7A58;
+  --text-brown: #2A1B14;
+  --text-brown-strong: #1A100B;
+  --accent-terracotta: #FF6B00;
+  --accent-terracotta-dark: #E66000;
+  --tan-secondary: #FFB37A;
+  --tan-muted: #E69D66;
 }
 
 /* Smooth theme transition */
@@ -34,6 +23,8 @@ html::after {
 @layer base {
   html {
     font-family:
+      "Hind Siliguri",
+      "Noto Sans Bengali",
       "Inter",
       system-ui,
       -apple-system,
@@ -53,6 +44,7 @@ html::after {
     min-height: 100vh;
     background: var(--bg-cream);
     color: var(--text-brown);
+    font-family: "Hind Siliguri", "Noto Sans Bengali", "Inter", sans-serif;
   }
 
   #root {
@@ -76,28 +68,109 @@ html::after {
   ::selection {
     background: rgba(217, 107, 39, 0.22);
   }
+
+  /* Remove any global gray borders or colors */
+  hr {
+    border-color: rgba(0, 0, 0, 0.1);
+  }
 }
 
 @layer utilities {
   .font-bengali {
     font-family:
-      "Noto Sans Bengali", "Hind Siliguri", "Inter", system-ui, sans-serif;
+      "Hind Siliguri", "Noto Sans Bengali", "Inter", system-ui, sans-serif;
   }
   .line-clamp-3 {
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
   }
-  .line-clamp-1 {
+  .line-clamp-4 {
     display: -webkit-box;
-    -webkit-line-clamp: 1;
+    -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: normal;
   }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  @keyframes infinite-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  .animate-infinite-scroll {
+    display: flex;
+    width: max-content;
+    animation: infinite-scroll 40s linear infinite;
+  }
+
+  @media (max-width: 640px) {
+    .animate-infinite-scroll {
+      width: max-content;
+      animation: infinite-scroll 25s linear infinite;
+      gap: 1rem;
+    }
+    .animate-infinite-scroll > div {
+      min-width: 80vw;
+    }
+  }
+
+  /* Prose Overrides */
+  .prose {
+    --tw-prose-body: var(--text-brown);
+    --tw-prose-headings: var(--text-brown);
+    --tw-prose-links: var(--accent-terracotta);
+    --tw-prose-bold: var(--text-brown);
+    --tw-prose-bullets: var(--accent-terracotta);
+    max-width: none;
+  }
 }
+  
+  @keyframes marquee-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .animate-marquee-scroll {
+    animation: marquee-scroll 40s linear infinite;
+  }
+
+  @keyframes marquee {
+    0% { transform: translateX(-50%); }
+    100% { transform: translateX(0); }
+  }
+  .animate-marquee {
+    display: inline-flex;
+    animation: marquee 25s linear infinite;
+    width: max-content;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 107, 0, 0.05) 25%,
+      rgba(255, 107, 0, 0.15) 50%,
+      rgba(255, 107, 0, 0.05) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite linear;
+  }
 
 /* Drawer overlay animation */
 .drawer-overlay {
@@ -108,6 +181,12 @@ html::after {
   opacity: 0;
   transition: opacity 0.3s ease;
   pointer-events: none;
+}
+
+@media (min-width: 1024px) {
+  .drawer-overlay {
+    display: none !important;
+  }
 }
 
 .drawer-overlay.open {
@@ -130,6 +209,15 @@ html::after {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+}
+
+@media (min-width: 1024px) {
+  .drawer-panel {
+    transform: translateX(0);
+    box-shadow: 2px 0 12px rgba(30, 20, 15, 0.05);
+    border-right: 2px solid black;
+    width: 280px;
+  }
 }
 
 .drawer-panel.open {
@@ -195,4 +283,31 @@ html::after {
 /* Prevent body scroll when drawer is open */
 body.drawer-open {
   overflow: hidden;
+}
+
+/* Add padding to body for mobile bottom nav */
+@media (max-width: 1023px) {
+  body {
+    padding-bottom: 70px;
+  }
+}
+
+/* Button Swap Animation */
+.btn-swap {
+  @apply relative overflow-hidden transition-all duration-300;
+  z-index: 1;
+}
+
+.btn-swap::before {
+  content: "";
+  @apply absolute inset-0 bg-white translate-y-full transition-transform duration-300 ease-in-out;
+  z-index: -1;
+}
+
+.btn-swap:hover::before {
+  @apply translate-y-0;
+}
+
+.btn-swap:hover {
+  @apply text-black shadow-lg;
 }

@@ -32,23 +32,23 @@ function ProgramsSection() {
     <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="mb-6 flex items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[var(--text-brown)]/70">
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-black">
             Ongoing Programs
           </p>
-          <h2 className="mt-2 text-2xl font-bold text-[var(--text-brown-strong)] sm:text-3xl">
+          <h2 className="mt-2 text-2xl font-black text-black sm:text-3xl">
             Multiple activity cards with carousel-style navigation
           </h2>
         </div>
         <div className="hidden gap-2 sm:flex">
           <button
             type="button"
-            className="h-10 w-10 rounded-full border border-[color:var(--tan-secondary)] bg-white text-[var(--text-brown)]"
+            className="h-10 w-10 rounded-full border-2 border-[var(--accent-terracotta)] bg-white text-black font-bold hover:bg-[var(--accent-terracotta)] hover:text-white transition-colors"
           >
             ←
           </button>
           <button
             type="button"
-            className="h-10 w-10 rounded-full border border-[color:var(--tan-secondary)] bg-white text-[var(--text-brown)]"
+            className="h-10 w-10 rounded-full border-2 border-[var(--accent-terracotta)] bg-white text-black font-bold hover:bg-[var(--accent-terracotta)] hover:text-white transition-colors"
           >
             →
           </button>
@@ -59,21 +59,21 @@ function ProgramsSection() {
         {programs.map((program) => (
           <article
             key={program.title}
-            className="min-w-[280px] flex-1 rounded-2xl border border-[color:var(--tan-secondary)] bg-white p-5 shadow-sm"
+            className="min-w-[280px] flex-1 rounded-2xl border-2 border-[var(--accent-terracotta)] bg-white p-5 shadow-sm"
           >
-            <div className="h-40 rounded-xl border border-dashed border-[color:var(--tan-muted)] bg-[var(--bg-cream)]" />
-            <p className="mt-4 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-brown)]/70">
+            <div className="h-40 rounded-xl border border-dashed border-[var(--accent-terracotta)]/30 bg-[var(--bg-cream)]" />
+            <p className="mt-4 text-xs font-bold uppercase tracking-[0.2em] text-black">
               Regular Programs
             </p>
-            <h3 className="mt-2 text-lg font-bold text-[var(--text-brown-strong)]">
+            <h3 className="mt-2 text-lg font-black text-black">
               {program.title}
             </h3>
-            <p className="mt-2 text-sm leading-7 text-[var(--text-brown)]/85">
+            <p className="mt-2 text-sm leading-7 text-black font-medium">
               {program.description}
             </p>
             <button
               type="button"
-              className="mt-5 inline-flex rounded-lg bg-[var(--accent-terracotta)] px-4 py-2.5 text-sm font-semibold text-white"
+              className="mt-5 inline-flex rounded-lg bg-[var(--accent-terracotta)] px-4 py-2.5 text-sm font-bold text-white border-2 border-[var(--accent-terracotta)] hover:bg-[var(--accent-terracotta-dark)] transition-colors"
             >
               View Details
             </button>
@@ -84,7 +84,7 @@ function ProgramsSection() {
       <div className="mt-4 flex justify-end sm:hidden">
         <button
           type="button"
-          className="rounded-full border border-[color:var(--tan-secondary)] bg-white px-4 py-2 text-sm text-[var(--text-brown)]"
+          className="rounded-full border-2 border-[var(--accent-terracotta)] bg-white px-4 py-2 text-sm font-bold text-black"
         >
           Programs
         </button>

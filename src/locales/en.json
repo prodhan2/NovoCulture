@@ -10,9 +10,25 @@
     "about": "About Us",
     "projects": "Projects",
     "media": "Media",
-    "contact": "Contact"
+    "contact": "Contact",
+    "donate": "Donate",
+    "admin": "Admin",
+    "executive_body": "Executive Body",
+    "posts": "Posts",
+    "notices": "Notices",
+    "logo_tagline": "Bangladeshi school spirit",
+    "notices_subtitle": "NovoCulture Notice Board",
+    "posts_subtitle": "NovoCulture Posts & Updates"
   },
-  "donate": "Donate Now",
+  "admin_panel": {
+    "title": "Admin Panel",
+    "projects": "Projects",
+    "media": "Media",
+    "hero_tabs": "Hero Tabs",
+    "join": "Join Us",
+    "contact": "Contact",
+    "settings": "Settings"
+  },
   "read_more": "Read more",
   "projects_label": "Projects",
   "projects_heading": "NovoCulture project updates",
@@ -21,6 +37,8 @@
   "hero_tagline": "Explore. Support. Inspire.",
   "hero_title": "NovoCulture homepage structure",
   "hero_description": "Warm, educational, and culturally grounded presentation for outreach, donation drives, and community programs across the foundation.",
+  "marquee_text": "NovoCulture: Discover. Support. Inspire. • Join our mission to empower communities through education and culture • Support our latest outreach programs • ",
+  "donate": "Donate Now",
   "learn_more": "Learn More",
   "community_outreach": "Community outreach",
   "transparent_giving": "Transparent giving",
@@ -29,6 +47,32 @@
   "subscribe_newsletter": "Subscribe for regular newsletter",
   "enter_email": "Enter your email",
   "subscribe": "Subscribe",
+  "back": "Back",
+  "logout": "Logout",
   "back_to_projects": "Back to projects",
-  "project_not_found": "Project not found."
+  "project_not_found": "Project not found.",
+  "tabs": {
+    "sampritik": "Recent",
+    "notice": "Notice",
+    "posts": "Posts",
+    "projects": "Projects"
+  },
+  "no_content_available": "No updates available for this category.",
+  "join_us_label": "Join Us",
+  "join_us_title": "Ways to participate in the mission",
+  "get_started": "Get Started",
+  "join": {
+    "donor": "Regular Donor",
+    "donor_desc": "Join our mission as a regular donor and help us make a lasting impact in the community.",
+    "donor_short": "Learn more about how to get involved.",
+    "members": "Lifetime & Patron Members",
+    "members_desc": "Be a part of our mission as a lifetime or patron member and support long-term development.",
+    "members_short": "Learn more about membership.",
+    "volunteer": "Volunteer",
+    "volunteer_desc": "Support our work by giving your time and skills as a volunteer.",
+    "volunteer_short": "Learn more about volunteering.",
+    "careers": "Careers",
+    "careers_desc": "Join our team and use your professional skills to make a positive change.",
+    "careers_short": "Learn about career opportunities."
+  }
 }

@@ -1,192 +1,78 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { getSettings } from "../../services/firestore";
+import bgImage from "../../assets/bg.webp";
+import logoImage from "../../assets/novocare.webp";
 
 function HeroSection() {
-  const { t } = useTranslation();
-  const [fund, setFund] = useState("");
-  const [contact, setContact] = useState("");
-  const [amount, setAmount] = useState("");
-  const [status, setStatus] = useState("");
-  const [donationExpanded, setDonationExpanded] = useState(false);
+  const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+  const [settings, setSettings] = useState(null);
 
-  function handleSubmit(event) {
-    event.preventDefault();
-
-    if (!fund || !contact || !amount) {
-      setStatus("Please complete the donation form fields.");
-      return;
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const s = await getSettings();
+        if (s) {
+          setSettings(s);
+        }
+      } catch (err) {
+        console.error("Failed to load hero section data:", err);
+      }
     }
+    loadData();
+  }, []);
 
-    setStatus(`Submitted: ${fund} | ${contact} | BDT ${amount}`);
-  }
+  const lang = i18n.language.startsWith("bn") ? "bn" : "en";
 
   return (
-    <section className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
-      <div className="relative overflow-hidden rounded-2xl border border-[color:var(--tan-secondary)]/60 bg-[var(--bg-cream-soft)] shadow-[0_18px_50px_rgba(74,37,17,0.08)]">
-        <div className={`grid min-h-[640px] ${
-          donationExpanded
-            ? "lg:grid-cols-[0fr_1fr]"
-            : "lg:grid-cols-[1.1fr_0.9fr]"
-        }`}>
-          <div className={`relative flex items-end p-6 sm:p-10 lg:p-14 transition-all duration-500 ease-in-out ${
-            donationExpanded
-              ? "lg:overflow-hidden lg:w-0 lg:invisible lg:opacity-0 lg:p-0"
-              : "lg:w-auto lg:visible lg:opacity-100"
-          }`}>
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(224,169,109,0.3),transparent_35%),linear-gradient(135deg,#fff5eb_0%,#faf0e6_48%,#f3dfc6_100%)]" />
-            <div className="absolute left-8 top-10 h-24 w-24 rounded-full border border-[color:var(--tan-secondary)] bg-white/60" />
-            <div className="absolute bottom-12 right-10 h-40 w-40 rounded-[1.75rem] border border-[color:var(--tan-secondary)] bg-[rgba(255,245,235,0.8)]" />
-            <div className="absolute left-1/2 top-10 h-28 w-28 -translate-x-1/2 rounded-full border border-dashed border-[color:var(--tan-muted)]/80 bg-white/30" />
+    <section className="w-full pt-0 sm:pt-4">
+      {/* Hero Banner */}
+      <div className="relative w-full overflow-hidden rounded-none sm:rounded-[2rem] flex items-center">
+        {/* Background Image */}
+        <div className="absolute inset-0 z-0">
+          <img 
+            src={bgImage} 
+            alt="Novoculture Hero" 
+            className="h-full w-full object-cover object-center"
+          />
+        </div>
 
-            {(() => {
-              return (
-                <div className="relative z-10 max-w-2xl space-y-6 rounded-2xl border border-[color:var(--tan-secondary)]/65 bg-white/75 p-6 backdrop-blur-sm sm:p-8">
-                  <span className="inline-flex rounded-full border border-[color:var(--tan-secondary)] bg-[var(--bg-cream)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--text-brown-strong)]">
-                    {t("hero_tagline", "Explore. Support. Inspire.")}
-                  </span>
-                  <div className="space-y-4">
-                    <h1 className="max-w-2xl text-3xl font-extrabold tracking-tight text-[var(--text-brown-strong)] sm:text-5xl lg:text-6xl">
-                      {t("hero_title", "NovoCulture homepage structure")}
-                    </h1>
-                    <p className="max-w-xl text-sm leading-7 text-[var(--text-brown)]/85 sm:text-base">
-                      {t(
-                        "hero_description",
-                        "Warm, educational, and culturally grounded presentation for outreach, donation drives, and community programs across the foundation.",
-                      )}
-                    </p>
-                  </div>
-
-                  <div className="flex flex-wrap gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setDonationExpanded(true)}
-                      className="rounded-lg bg-[var(--accent-terracotta)] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--accent-terracotta-dark)] hover:shadow-md"
-                    >
-                      {t("donate", "Donate Now")}
-                    </button>
-                    <button
-                      type="button"
-                      className="rounded-lg border border-[color:var(--tan-secondary)] bg-white px-5 py-3 text-sm font-semibold text-[var(--text-brown)] transition hover:bg-[var(--bg-cream)]"
-                    >
-                      {t("learn_more", "Learn More")}
-                    </button>
-                  </div>
-
-                  <div className="grid gap-3 sm:grid-cols-3">
-                    {[
-                      t("community_outreach", "Community outreach"),
-                      t("transparent_giving", "Transparent giving"),
-                      t("education_support", "Education support"),
-                    ].map((value) => (
-                      <div
-                        key={value}
-                        className="rounded-xl border border-[color:var(--tan-secondary)]/70 bg-[var(--bg-cream)] px-4 py-3 text-sm font-medium text-[var(--text-brown)]"
-                      >
-                        {value}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              );
-            })()}
-          </div>
-
-          <div className={`relative border-t border-[color:var(--tan-secondary)]/45 lg:border-l lg:border-t-0 transition-all duration-500 ease-in-out ${
-            donationExpanded
-              ? "lg:border-l-0"
-              : ""
-          }`}>
-            <div className="flex h-full flex-col justify-between gap-6 p-6 sm:p-10 lg:p-14">
-              {donationExpanded && (
-                <button
-                  type="button"
-                  onClick={() => setDonationExpanded(false)}
-                  className="absolute left-4 top-4 z-10 flex items-center gap-1.5 rounded-full border border-[color:var(--tan-secondary)] bg-[var(--bg-cream)] px-3 py-1.5 text-xs font-medium text-[var(--text-brown)] shadow-sm transition hover:bg-[var(--bg-cream-soft)]"
-                >
-                  <ArrowLeft className="h-3.5 w-3.5" />
-                  {t("back", "Back")}
-                </button>
-              )}
-              <form
-                className="space-y-4 rounded-2xl border border-[color:var(--tan-secondary)] bg-white p-5 shadow-sm"
-                onSubmit={handleSubmit}
-              >
-                <h2 className="text-2xl font-bold text-[var(--text-brown-strong)]">
-                  Make a Donation
-                </h2>
-                <div className="space-y-3 text-sm text-[var(--text-brown)]/85">
-                  <label className="block">
-                    <span className="mb-1 block font-medium" htmlFor="fund">
-                      Fund
-                    </span>
-                    <select
-                      id="fund"
-                      value={fund}
-                      onChange={(event) => setFund(event.target.value)}
-                      className="h-11 w-full rounded-lg border border-[color:var(--tan-secondary)] bg-[var(--bg-cream)] px-3 outline-none transition focus:border-[var(--accent-terracotta)] focus:ring-2 focus:ring-[rgba(217,107,39,0.2)]"
-                    >
-                      <option value="">Select</option>
-                      <option value="General Donation">General Donation</option>
-                      {/* <option value="Zakat">Zakat</option> */}
-                      <option value="Eid Gift">Eid Gift</option>
-                      {/* <option value="Relief">Relief</option> */}
-                    </select>
-                  </label>
-                  <label className="block">
-                    <span className="mb-1 block font-medium" htmlFor="contact">
-                      Mobile / Email
-                    </span>
-                    <input
-                      id="contact"
-                      type="text"
-                      value={contact}
-                      onChange={(event) => setContact(event.target.value)}
-                      placeholder="Mobile number or email"
-                      className="h-11 w-full rounded-lg border border-[color:var(--tan-secondary)] bg-[var(--bg-cream)] px-3 outline-none transition focus:border-[var(--accent-terracotta)] focus:ring-2 focus:ring-[rgba(217,107,39,0.2)]"
-                    />
-                  </label>
-                  <label className="block">
-                    <span className="mb-1 block font-medium" htmlFor="amount">
-                      Amount
-                    </span>
-                    <input
-                      id="amount"
-                      type="number"
-                      min="1"
-                      value={amount}
-                      onChange={(event) => setAmount(event.target.value)}
-                      placeholder="Amount (BDT)"
-                      className="h-11 w-full rounded-lg border border-[color:var(--tan-secondary)] bg-[var(--bg-cream)] px-3 outline-none transition focus:border-[var(--accent-terracotta)] focus:ring-2 focus:ring-[rgba(217,107,39,0.2)]"
-                    />
-                  </label>
-                  <button
-                    type="submit"
-                    className="w-full rounded-lg bg-[var(--accent-terracotta)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--accent-terracotta-dark)]"
-                  >
-                    Donate
-                  </button>
-                </div>
-                <p className="text-xs leading-6 text-[var(--text-brown)]/70">
-                  {status || "Donations to NovoCulture may be tax-deductible."}
+        {/* Content */}
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-12 lg:px-20 py-8 sm:py-16 text-center lg:text-left">
+          <div className="max-w-4xl">
+            <div className="flex flex-row items-center gap-3 sm:gap-4 mb-2 sm:mb-4 justify-center lg:justify-start">
+              <img src={logoImage} alt="Logo" className="h-10 w-10 sm:h-16 sm:w-16 lg:h-20 lg:w-20 object-contain" />
+              <div className="flex flex-col items-start lg:items-start">
+                <h1 className="text-2xl sm:text-4xl lg:text-6xl font-black text-[var(--text-brown-strong)] tracking-tight drop-shadow-sm leading-tight">
+                  Novoculture
+                </h1>
+                <p className="text-[10px] sm:text-sm lg:text-base font-bold text-[var(--accent-terracotta)] uppercase tracking-wider">
+                  {t("nav.logo_tagline", "Bangladeshi school spirit")}
                 </p>
-              </form>
-
-              <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
-                {["Education", "Scholarship", "Healthcare"].map((label) => (
-                  <div
-                    key={label}
-                    className="rounded-xl border border-[color:var(--tan-secondary)] bg-white p-4"
-                  >
-                    <p className="text-xs uppercase tracking-[0.2em] text-[var(--text-brown)]/70">
-                      Campaign
-                    </p>
-                    <p className="mt-2 text-lg font-semibold text-[var(--text-brown-strong)]">
-                      {label}
-                    </p>
-                  </div>
-                ))}
               </div>
+            </div>
+            <p className="text-sm sm:text-base lg:text-lg text-[var(--text-brown)]/90 font-bold leading-relaxed mb-6 sm:mb-10 max-w-3xl mx-auto lg:mx-0">
+              Novoculture একটি অরাজনৈতিক ও অলাভজনক সামাজিক প্ল্যাটফর্ম, যা শিক্ষা, নৈতিকতা এবং মানবতার সেবায় নিবেদিত। আমরা জ্ঞান ও সেবামূলক কার্যক্রমের মাধ্যমে একটি সুন্দর ও আলোকিত সমাজ বিনির্মাণে কাজ করছি।
+            </p>
+            <div className="flex flex-row items-center justify-center lg:justify-start gap-3 sm:gap-6">
+              <Link 
+                to="/about"
+                className="flex-1 sm:flex-none px-6 sm:px-10 py-3 sm:py-4 bg-[var(--accent-terracotta)] text-white text-sm sm:text-lg font-black rounded-xl sm:rounded-2xl transition-all hover:bg-[var(--accent-terracotta-dark)] hover:scale-105 active:scale-95 shadow-xl shadow-orange-900/20 flex items-center justify-center whitespace-nowrap"
+              >
+                আরও জানুন
+              </Link>
+              <button 
+                onClick={() => {
+                  const el = document.getElementById('ongoing-activities');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  else navigate("/projects");
+                }}
+                className="flex-1 sm:flex-none px-6 sm:px-10 py-3 sm:py-4 bg-[var(--accent-terracotta)] text-white text-sm sm:text-lg font-black rounded-xl sm:rounded-2xl transition-all hover:bg-[var(--accent-terracotta-dark)] hover:scale-105 active:scale-95 shadow-xl shadow-orange-900/20 flex items-center justify-center whitespace-nowrap"
+              >
+                কার্যক্রমসমূহ
+              </button>
             </div>
           </div>
         </div>

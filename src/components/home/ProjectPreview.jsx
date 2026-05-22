@@ -9,7 +9,7 @@ function ProjectPreview({ project }) {
     project.id || (p.title && p.title.replace(/\s+/g, "-").toLowerCase());
 
   return (
-    <article className="group rounded-2xl border border-[color:var(--tan-secondary)] bg-white p-0 shadow-sm overflow-hidden transition-transform duration-200 hover:shadow-md hover:-translate-y-1">
+    <article className="group rounded-2xl border-2 border-[var(--accent-terracotta)] bg-white p-0 shadow-sm overflow-hidden transition-transform duration-200 hover:shadow-md hover:-translate-y-1">
       <div className="p-6">
         <div className="relative">
           {p.image || project.image ? (
@@ -19,25 +19,25 @@ function ProjectPreview({ project }) {
               className="h-44 w-full rounded-xl object-cover"
             />
           ) : (
-            <div className="h-44 rounded-xl border border-dashed border-[color:var(--tan-muted)] bg-[var(--bg-cream-soft)]" />
+            <div className="h-44 rounded-xl border border-dashed border-[var(--accent-terracotta)]/30 bg-[var(--bg-cream-soft)]" />
           )}
-          <div className="absolute left-3 top-3 inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[var(--text-brown)] shadow-sm">
+          <div className="absolute left-3 top-3 inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-xs font-bold uppercase tracking-wide text-black shadow-sm">
             {p.subtitle}
           </div>
         </div>
 
-        <h3 className="mt-4 text-xl font-bold text-[var(--text-brown-strong)] leading-tight">
+        <h3 className="mt-4 text-base sm:text-lg font-black text-black leading-tight line-clamp-2 min-h-[3rem]">
           {p.title}
         </h3>
 
-        <p className="mt-2 text-sm text-[var(--text-brown)]/85 line-clamp-1">
+        <p className="mt-2 text-xs sm:text-sm text-black font-medium line-clamp-2 min-h-[2.5rem]">
           {p.description || p.summary}
         </p>
         <div className="mt-4 flex justify-center">
           <Link
             to={`/projects/${id}`}
             aria-label={t("read_more")}
-            className="inline-flex items-center gap-2 rounded-md bg-[var(--accent-terracotta)] px-3 py-1.5 text-sm font-semibold text-white shadow-sm transition-colors duration-150 hover:bg-[color:var(--accent-terracotta)]/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-terracotta)] focus-visible:ring-offset-2"
+            className="inline-flex items-center gap-2 rounded-md bg-[var(--accent-terracotta)] px-3 py-1.5 text-sm font-bold text-white shadow-sm transition-colors duration-150 hover:bg-[var(--accent-terracotta-dark)] border-2 border-[var(--accent-terracotta)]"
           >
             <span>{t("read_more")}</span>
             <svg

@@ -39,114 +39,124 @@ export default function ContactAdmin() {
     setMessage("");
     try {
       await setSettings({ contact });
-      setMessage("Saved successfully.");
+      setMessage("সফলভাবে সেভ হয়েছে।");
     } catch (err) {
       console.error(err);
-      setMessage("Save failed. See console.");
+      setMessage("সেভ করতে সমস্যা হয়েছে। কনসোল চেক করুন।");
     } finally {
       setSaving(false);
     }
   }
 
   return (
-    <div className="rounded-2xl border border-[color:var(--tan-secondary)] bg-white p-6 shadow-sm">
-      <h2 className="mb-4 text-lg font-semibold">
-        Edit contact (English & Bangla)
+    <div className="rounded-2xl border-2 border-white bg-white p-6 shadow-sm">
+      <h2 className="mb-6 text-xl font-bold text-black">
+        যোগাযোগের তথ্য পরিবর্তন (ইংরেজি ও বাংলা)
       </h2>
 
       {loading ? (
-        <p>Loading…</p>
+        <div className="flex h-32 items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-black border-t-transparent"></div>
+        </div>
       ) : (
         <div className="space-y-6">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <h3 className="mb-2 font-medium">English</h3>
-              <label className="mb-1 block text-sm font-medium">Address</label>
-              <textarea
-                rows={3}
-                value={contact.en.address}
-                onChange={(e) =>
-                  setContact({
-                    ...contact,
-                    en: { ...contact.en, address: e.target.value },
-                  })
-                }
-                className="w-full rounded-lg border border-[color:var(--tan-secondary)] px-3 py-2"
-              />
+          <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
+            <div className="space-y-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-black">ইংরেজি (English)</h3>
+              <div>
+                <label className="mb-1 block text-sm font-bold text-black">ঠিকানা (Address)</label>
+                <textarea
+                  rows={3}
+                  value={contact.en.address}
+                  onChange={(e) =>
+                    setContact({
+                      ...contact,
+                      en: { ...contact.en, address: e.target.value },
+                    })
+                  }
+                  className="w-full rounded-xl border-2 border-white px-4 py-3 text-sm focus:border-[var(--accent-terracotta)] focus:outline-none text-black"
+                />
+              </div>
 
-              <label className="mb-1 mt-3 block text-sm font-medium">
-                Phone
-              </label>
-              <input
-                value={contact.en.phone}
-                onChange={(e) =>
-                  setContact({
-                    ...contact,
-                    en: { ...contact.en, phone: e.target.value },
-                  })
-                }
-                className="w-full rounded-lg border border-[color:var(--tan-secondary)] px-3 py-2"
-              />
+              <div>
+                <label className="mb-1 block text-sm font-bold text-black">
+                  ফোন (Phone)
+                </label>
+                <input
+                  value={contact.en.phone}
+                  onChange={(e) =>
+                    setContact({
+                      ...contact,
+                      en: { ...contact.en, phone: e.target.value },
+                    })
+                  }
+                  className="w-full rounded-xl border-2 border-white px-4 py-3 text-sm focus:border-[var(--accent-terracotta)] focus:outline-none text-black"
+                />
+              </div>
             </div>
 
-            <div>
-              <h3 className="mb-2 font-medium">Bangla</h3>
-              <label className="mb-1 block text-sm font-medium">
-                Address (Bangla)
-              </label>
-              <textarea
-                rows={3}
-                dir="auto"
-                value={contact.bn.address}
-                onChange={(e) =>
-                  setContact({
-                    ...contact,
-                    bn: { ...contact.bn, address: e.target.value },
-                  })
-                }
-                placeholder="ঠিকানা"
-                className="w-full rounded-lg border border-[color:var(--tan-secondary)] px-3 py-2"
-              />
+            <div className="space-y-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-black">বাংলা</h3>
+              <div>
+                <label className="mb-1 block text-sm font-bold text-black">
+                  ঠিকানা
+                </label>
+                <textarea
+                  rows={3}
+                  dir="auto"
+                  value={contact.bn.address}
+                  onChange={(e) =>
+                    setContact({
+                      ...contact,
+                      bn: { ...contact.bn, address: e.target.value },
+                    })
+                  }
+                  placeholder="ঠিকানা"
+                  className="w-full rounded-xl border-2 border-white px-4 py-3 text-sm focus:border-[var(--accent-terracotta)] focus:outline-none text-black"
+                />
+              </div>
 
-              <label className="mb-1 mt-3 block text-sm font-medium">
-                Phone
-              </label>
-              <input
-                value={contact.bn.phone}
-                onChange={(e) =>
-                  setContact({
-                    ...contact,
-                    bn: { ...contact.bn, phone: e.target.value },
-                  })
-                }
-                className="w-full rounded-lg border border-[color:var(--tan-secondary)] px-3 py-2"
-              />
+              <div>
+                <label className="mb-1 block text-sm font-bold text-black">
+                  ফোন
+                </label>
+                <input
+                  value={contact.bn.phone}
+                  onChange={(e) =>
+                    setContact({
+                      ...contact,
+                      bn: { ...contact.bn, phone: e.target.value },
+                    })
+                  }
+                  className="w-full rounded-xl border-2 border-white px-4 py-3 text-sm focus:border-[var(--accent-terracotta)] focus:outline-none text-black"
+                />
+              </div>
             </div>
           </div>
 
-          <div>
-            <label className="mb-1 block text-sm font-medium">
-              Email (shared)
+          <div className="pt-4 border-t-2 border-white">
+            <label className="mb-2 block text-sm font-bold text-black">
+              ইমেইল (উভয় ভাষার জন্য প্রযোজ্য)
             </label>
             <input
               value={contact.email}
               onChange={(e) =>
                 setContact({ ...contact, email: e.target.value })
               }
-              className="w-full rounded-lg border border-[color:var(--tan-secondary)] px-3 py-2"
+              className="w-full rounded-xl border-2 border-white px-4 py-3 text-sm focus:border-[var(--accent-terracotta)] focus:outline-none text-black"
             />
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 pt-4">
             <button
               onClick={handleSave}
               disabled={saving}
-              className="inline-flex rounded-lg bg-[var(--accent-terracotta)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+              className="rounded-xl bg-black px-8 py-3 text-sm font-bold text-white transition btn-swap hover:bg-black/80 disabled:opacity-50"
             >
-              {saving ? "Saving…" : "Save"}
+              <span>{saving ? "সেভ হচ্ছে…" : "তথ্য আপডেট করুন"}</span>
             </button>
             {message && (
-              <span className="text-sm text-[var(--text-brown)]/80">
+              <span className="text-sm font-bold text-green-600">
                 {message}
               </span>
             )}

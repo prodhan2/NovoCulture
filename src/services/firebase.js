@@ -1,33 +1,23 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
+  apiKey: "AIzaSyD0c86rYuGITPhl6KfViF6uhDOpZxq88wE",
+  authDomain: "novoculture-4b74d.firebaseapp.com",
+  projectId: "novoculture-4b74d",
+  storageBucket: "novoculture-4b74d.firebasestorage.app",
+  messagingSenderId: "1062109936378",
+  appId: "1:1062109936378:web:f4b4a92455f759f4b66743",
+  measurementId: "G-7KQ62G9WVM"
 };
 
-let app = null;
-let db = null;
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+const analytics = typeof window !== "undefined" ? getAnalytics(app) : null;
 
-if (firebaseConfig.projectId) {
-  try {
-    app = initializeApp(firebaseConfig);
-    db = getFirestore(app);
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.warn("Failed to initialize Firebase:", err);
-  }
-} else {
-  // eslint-disable-next-line no-console
-  console.warn(
-    "Firebase not configured. Set VITE_FIREBASE_PROJECT_ID in your env.",
-  );
-}
-
-export { app, db };
+export { app, db, auth, googleProvider, analytics };
