@@ -1,7 +1,6 @@
 /**
  * SMS Service for bulksmsbd.net
  */
-
 const BASE_URL = "https://bulksmsbd.net/api";
 
 /**

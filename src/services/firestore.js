@@ -223,10 +223,23 @@ export async function addDonation(data) {
 
 export async function getDonations(uid = null) {
   if (!db) return [];
-  const q = query(collection(db, "donations"), orderBy("date", "desc"));
-  const snap = await getDocs(q);
-  const all = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-  return uid ? all.filter(item => item.uid === uid) : all;
+  try {
+    let q;
+    if (uid) {
+      q = query(
+        collection(db, "donations"), 
+        where("uid", "==", uid),
+        orderBy("date", "desc")
+      );
+    } else {
+      q = query(collection(db, "donations"), orderBy("date", "desc"));
+    }
+    const snap = await getDocs(q);
+    return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  } catch (error) {
+    console.error("Error fetching donations:", error);
+    return [];
+  }
 }
 
 // Contact Message History

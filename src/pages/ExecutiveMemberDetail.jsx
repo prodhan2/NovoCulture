@@ -52,84 +52,94 @@ export default function ExecutiveMemberDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-cream)] flex items-center justify-center p-4">
-      <div className="w-full max-w-2xl bg-white rounded-[2.5rem] border-2 border-[var(--text-brown)]/5 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-700 relative">
-        {/* Minimal Navigation */}
-        <div className="absolute top-6 left-6 z-10">
+    <div className="min-h-screen bg-[var(--bg-cream)] flex flex-col">
+      {/* Navigation Header */}
+      <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b-2 border-[var(--accent-terracotta)]/10 px-4 py-4 sm:px-8">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
           <button 
             onClick={() => navigate(-1)} 
-            className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/80 backdrop-blur-md text-[var(--text-brown)] shadow-sm hover:scale-110 transition-all border border-[var(--text-brown)]/5"
+            className="group flex items-center gap-3"
           >
-            <ArrowLeft className="h-5 w-5" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white border-2 border-[var(--accent-terracotta)] shadow-sm transition group-hover:bg-[var(--accent-terracotta)] group-hover:text-white">
+              <ArrowLeft className="h-5 w-5" />
+            </div>
+            <span className="text-sm font-black uppercase tracking-widest text-[var(--text-brown)] hidden sm:inline">ফিরে যান</span>
           </button>
+          <h1 className="text-lg sm:text-2xl font-black text-[var(--text-brown-strong)] tracking-tight truncate px-4">সদস্য প্রোফাইল</h1>
+          <div className="w-10 sm:w-24" />
         </div>
+      </header>
 
-        {/* Layout Container */}
-        <div className="flex flex-col md:flex-row min-h-[400px]">
-          {/* Left Side: Image Section */}
-          <div className="w-full md:w-2/5 relative bg-[var(--bg-cream-soft)] min-h-[300px] md:min-h-full overflow-hidden">
-            {member.userPhoto ? (
-              <img 
-                src={member.userPhoto} 
-                alt={member.userName} 
-                className="absolute inset-0 h-full w-full object-cover" 
-              />
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center text-[var(--text-brown)]/10">
-                <User className="h-24 w-24" />
-              </div>
-            )}
-            {/* Status Badge */}
-            <div className="absolute top-6 right-6 h-10 w-10 rounded-xl bg-green-500 border-4 border-white flex items-center justify-center shadow-lg">
-              <ShieldCheck className="h-5 w-5 text-white" />
-            </div>
+      <main className="max-w-4xl mx-auto px-4 py-12 sm:px-8">
+        <div className="bg-white rounded-[3rem] border-2 border-[var(--text-brown)]/5 shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-700">
+          {/* Cover/Top Section */}
+          <div className="relative h-32 sm:h-48 bg-gradient-to-r from-[var(--accent-terracotta)] to-orange-400">
+            <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
           </div>
 
-          {/* Right Side: Content Section */}
-          <div className="w-full md:w-3/5 p-8 md:p-12 flex flex-col">
-            <div className="mb-8">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--accent-terracotta)]/10 text-[var(--accent-terracotta)] font-black text-[9px] uppercase tracking-[0.2em] mb-3">
-                <Briefcase className="h-3 w-3" />
-                <span>Executive Member</span>
-              </div>
-              <h2 className="text-3xl font-black text-[var(--text-brown-strong)] tracking-tight mb-1">
-                {member.userName}
-              </h2>
-              <p className="text-sm font-bold text-[var(--accent-terracotta)] uppercase tracking-wider">
-                {member.position}
-              </p>
-            </div>
-
-            <div className="space-y-6 flex-1">
-              {member.userEmail && (
-                <div className="flex items-center gap-3 text-sm font-bold text-[var(--text-brown)]/60">
-                  <div className="h-8 w-8 rounded-lg bg-[var(--bg-cream-soft)] flex items-center justify-center text-[var(--accent-terracotta)]">
-                    <Mail className="h-4 w-4" />
+          <div className="px-6 sm:px-12 pb-12 sm:pb-16 relative">
+            {/* Profile Photo */}
+            <div className="relative -mt-16 sm:-mt-24 mb-8">
+              <div className="h-32 w-32 sm:h-48 sm:w-48 rounded-full border-[6px] sm:border-[8px] border-white shadow-2xl overflow-hidden bg-white mx-auto md:mx-0">
+                {member.userPhoto ? (
+                  <img src={member.userPhoto} alt={member.userName} className="h-full w-full object-cover" />
+                ) : (
+                  <div className="h-full w-full flex items-center justify-center bg-[var(--bg-cream)] text-[var(--text-brown)]">
+                    <User className="h-16 w-16 sm:h-24 sm:w-24" />
                   </div>
-                  <span>{member.userEmail}</span>
-                </div>
-              )}
-
-              <div className="bg-[var(--bg-cream-soft)]/50 p-6 rounded-[1.5rem] border border-[var(--text-brown)]/5">
-                <p className="text-sm font-medium text-[var(--text-brown)]/80 leading-relaxed italic">
-                  "{member.info || "এই সদস্য সম্পর্কে বিস্তারিত তথ্য শীঘ্রই যোগ করা হবে।"}"
-                </p>
+                )}
               </div>
             </div>
 
-            {/* Footer */}
-            <div className="mt-10 pt-6 border-t border-[var(--text-brown)]/5 flex items-center justify-between text-[9px] font-black uppercase tracking-widest text-[var(--text-brown)]/30">
-              <div className="flex items-center gap-2">
-                <Calendar className="h-3 w-3" />
-                <span>Joined 2026</span>
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+              <div className="text-center md:text-left space-y-4">
+                <h2 className="text-3xl sm:text-5xl font-black text-[var(--text-brown-strong)] tracking-tighter leading-none">
+                  {member.userName}
+                </h2>
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 sm:gap-6">
+                  <div className="flex items-center gap-2.5 px-5 py-2.5 rounded-2xl bg-[var(--accent-terracotta)]/10 text-[var(--accent-terracotta)] font-black text-xs sm:text-sm uppercase tracking-widest">
+                    <Briefcase className="h-4 w-4" />
+                    <span>{member.position}</span>
+                  </div>
+                  {member.userEmail && (
+                    <div className="flex items-center gap-2.5 text-[var(--text-brown)]/60 font-bold text-sm sm:text-base">
+                      <Mail className="h-5 w-5 text-[var(--accent-terracotta)]" />
+                      <span>{member.userEmail}</span>
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="px-3 py-1 rounded-lg border border-[var(--text-brown)]/10">
-                ID: {member.id.slice(0, 8)}
+            </div>
+
+            <div className="mt-12 sm:mt-16 grid gap-12 lg:grid-cols-1">
+              {/* Detailed Info Section */}
+              <section className="space-y-8">
+                <div className="flex items-center gap-4 text-[var(--text-brown-strong)]">
+                  <div className="h-1.5 w-12 bg-[var(--accent-terracotta)] rounded-full" />
+                  <h3 className="text-xl sm:text-2xl font-black uppercase tracking-widest">পরিচিতি ও তথ্য</h3>
+                </div>
+                
+                <div className="prose prose-lg max-w-none">
+                  <p className="text-lg sm:text-xl text-[var(--text-brown)]/80 font-medium leading-relaxed whitespace-pre-wrap bg-[var(--bg-cream)]/30 p-6 sm:p-10 rounded-[2.5rem] border-2 border-[var(--text-brown)]/5">
+                    {member.info || "এই সদস্য সম্পর্কে বিস্তারিত তথ্য শীঘ্রই যোগ করা হবে।"}
+                  </p>
+                </div>
+              </section>
+
+              {/* Status/Badge */}
+              <div className="flex items-center gap-4 p-6 sm:p-8 rounded-[2rem] bg-[var(--text-brown)] text-white shadow-xl shadow-orange-900/10">
+                <div className="h-12 w-12 rounded-full bg-[var(--accent-terracotta)] flex items-center justify-center shrink-0">
+                  <ShieldCheck className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-xs font-black uppercase tracking-widest text-white/40 mb-1">Status</p>
+                  <p className="text-lg font-bold">Verified Executive Member</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
