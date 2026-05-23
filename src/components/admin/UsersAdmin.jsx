@@ -207,9 +207,21 @@ export default function UsersAdmin() {
           <h1 className="text-2xl font-black text-black uppercase tracking-tight">
             ব্যবহারকারী তালিকা
           </h1>
-          <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest mt-1">
-            মোট {users.length} জন নিবন্ধিত ব্যবহারকারী
-          </p>
+          <div className="flex flex-wrap items-center gap-4 mt-2">
+            <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest">
+              মোট {users.length} জন ব্যবহারকারী
+            </p>
+            <div className="flex items-center gap-3 border-l-2 border-black/5 pl-4">
+              <div className="flex items-center gap-1.5">
+                <div className="h-2 w-2 rounded-full bg-rose-600 shadow-sm shadow-rose-600/20" />
+                <span className="text-[9px] font-black uppercase tracking-tighter text-rose-600">Superadmin</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="h-2 w-2 rounded-full bg-indigo-600 shadow-sm shadow-indigo-600/20" />
+                <span className="text-[9px] font-black uppercase tracking-tighter text-indigo-600">Coadmin</span>
+              </div>
+            </div>
+          </div>
         </div>
         
         <div className="relative w-full sm:w-80">
