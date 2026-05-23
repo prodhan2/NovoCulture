@@ -26,25 +26,34 @@ export default function UsersAdmin() {
     }
   }
 
-  const handleToggleSuperadmin = async (user) => {
+  const handleToggleSuperadmin = async (user, e) => {
+    // Stop propagation if event exists (for list view button)
+    if (e) e.stopPropagation();
+
     if (!window.confirm(`আপনি কি নিশ্চিত যে আপনি ${user.displayName || 'এই ব্যবহারকারী'}-কে ${user.superadmin ? 'সুপারঅ্যাডমিন থেকে সাধারণ ব্যবহারকারী' : 'সুপারঅ্যাডমিন'} বানাতে চান?`)) {
+      return;
+    }
+
+    const userId = user.id || user.uid;
+    if (!userId) {
+      alert("ব্যবহারকারীর আইডি পাওয়া যায়নি।");
       return;
     }
 
     try {
       setUpdating(true);
-      const newStatus = await toggleUserSuperadmin(user.uid, !!user.superadmin);
+      const newStatus = await toggleUserSuperadmin(userId, !!user.superadmin);
       
       // Update local state
-      setUsers(prev => prev.map(u => u.uid === user.uid ? { ...u, superadmin: newStatus } : u));
-      if (selectedUser?.uid === user.uid) {
+      setUsers(prev => prev.map(u => (u.id === userId || u.uid === userId) ? { ...u, superadmin: newStatus } : u));
+      if (selectedUser?.id === userId || selectedUser?.uid === userId) {
         setSelectedUser(prev => ({ ...prev, superadmin: newStatus }));
       }
       
       alert(newStatus ? "সফলভাবে সুপারঅ্যাডমিন বানানো হয়েছে!" : "সুপারঅ্যাডমিন ক্ষমতা বাতিল করা হয়েছে।");
     } catch (error) {
       console.error("Error toggling superadmin:", error);
-      alert("অপারেশনটি সফল হয়নি।");
+      alert(`অপারেশনটি সফল হয়নি: ${error.message}`);
     } finally {
       setUpdating(false);
     }
@@ -78,7 +87,7 @@ export default function UsersAdmin() {
           </div>
 
           <button
-            onClick={() => handleToggleSuperadmin(selectedUser)}
+            onClick={(e) => handleToggleSuperadmin(selectedUser, e)}
             disabled={updating}
             className={`flex items-center gap-2 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all ${
               selectedUser.superadmin 
@@ -229,6 +238,21 @@ export default function UsersAdmin() {
                   </div>
                   <p className="text-[10px] font-bold text-black/30 truncate">{user.email}</p>
                 </div>
+
+                {/* Quick Toggle Button */}
+                <button
+                  onClick={(e) => handleToggleSuperadmin(user, e)}
+                  disabled={updating}
+                  className={`p-2.5 rounded-xl border-2 transition-all ${
+                    user.superadmin 
+                      ? "border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white" 
+                      : "border-emerald-500/20 text-emerald-500 hover:bg-emerald-500 hover:text-white"
+                  } disabled:opacity-50`}
+                  title={user.superadmin ? "সুপারঅ্যাডমিন থেকে সরান" : "সুপারঅ্যাডমিন বানান"}
+                >
+                  {user.superadmin ? <ShieldAlert className="h-4 w-4" /> : <ShieldCheck className="h-4 w-4" />}
+                </button>
+
                 <div className="p-2 rounded-lg bg-black/5 text-black/20 group-hover:bg-[var(--accent-terracotta)] group-hover:text-white transition-all">
                   <ArrowLeft className="h-3 w-3 rotate-180" />
                 </div>
