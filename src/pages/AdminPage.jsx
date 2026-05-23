@@ -35,7 +35,7 @@ export default function AdminPage() {
 
       try {
         const profile = await getUserProfile(user.uid);
-        if (profile?.superadmin) {
+        if (profile?.role === "superadmin" || profile?.role === "coadmin" || profile?.superadmin) {
           setIsAdmin(true);
         } else {
           navigate("/");

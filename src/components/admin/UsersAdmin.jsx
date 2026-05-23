@@ -1,14 +1,24 @@
 import { useState, useEffect } from "react";
-import { getAllUsers, toggleUserSuperadmin } from "../../services/firestore";
-import { User, Mail, Phone, MapPin, Calendar, Briefcase, Globe, Info, ArrowLeft, Loader2, Search, ShieldCheck, ShieldAlert } from "lucide-react";
+import { getAllUsers, updateUserRole, getUserProfile } from "../../services/firestore";
+import { auth } from "../../services/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { User, Mail, Phone, MapPin, Calendar, Briefcase, Globe, Info, ArrowLeft, Loader2, Search, ShieldCheck, ShieldAlert, Shield } from "lucide-react";
 import Shimmer from "../common/Shimmer";
 
 export default function UsersAdmin() {
+  const [user] = useAuthState(auth);
+  const [currentUserProfile, setCurrentUserProfile] = useState(null);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [updating, setUpdating] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      getUserProfile(user.uid).then(setCurrentUserProfile);
+    }
+  }, [user]);
 
   useEffect(() => {
     fetchUsers();
@@ -26,38 +36,41 @@ export default function UsersAdmin() {
     }
   }
 
-  const handleToggleSuperadmin = async (user, e) => {
-    // Stop propagation if event exists (for list view button)
+  const handleRoleChange = async (targetUser, newRole, e) => {
     if (e) e.stopPropagation();
 
-    if (!window.confirm(`আপনি কি নিশ্চিত যে আপনি ${user.displayName || 'এই ব্যবহারকারী'}-কে ${user.superadmin ? 'সুপারঅ্যাডমিন থেকে সাধারণ ব্যবহারকারী' : 'সুপারঅ্যাডমিন'} বানাতে চান?`)) {
+    // Check permissions: Only superadmin can change roles
+    const isSuperAdmin = currentUserProfile?.role === "superadmin" || currentUserProfile?.superadmin === true;
+    if (!isSuperAdmin) {
+      alert("শুধুমাত্র সুপারঅ্যাডমিন রোল পরিবর্তন করতে পারেন।");
       return;
     }
 
-    const userId = user.id || user.uid;
-    if (!userId) {
-      alert("ব্যবহারকারীর আইডি পাওয়া যায়নি।");
+    if (!window.confirm(`আপনি কি নিশ্চিত যে আপনি ${targetUser.displayName || 'এই ব্যবহারকারী'}-কে ${newRole === 'coadmin' ? 'কো-অ্যাডমিন' : 'সাধারণ ব্যবহারকারী'} বানাতে চান?`)) {
       return;
     }
 
+    const userId = targetUser.id || targetUser.uid;
     try {
       setUpdating(true);
-      const newStatus = await toggleUserSuperadmin(userId, !!user.superadmin);
+      await updateUserRole(userId, newRole);
       
       // Update local state
-      setUsers(prev => prev.map(u => (u.id === userId || u.uid === userId) ? { ...u, superadmin: newStatus } : u));
+      setUsers(prev => prev.map(u => (u.id === userId || u.uid === userId) ? { ...u, role: newRole, superadmin: newRole === 'superadmin' } : u));
       if (selectedUser?.id === userId || selectedUser?.uid === userId) {
-        setSelectedUser(prev => ({ ...prev, superadmin: newStatus }));
+        setSelectedUser(prev => ({ ...prev, role: newRole, superadmin: newRole === 'superadmin' }));
       }
       
-      alert(newStatus ? "সফলভাবে সুপারঅ্যাডমিন বানানো হয়েছে!" : "সুপারঅ্যাডমিন ক্ষমতা বাতিল করা হয়েছে।");
+      alert(newRole === 'coadmin' ? "সফলভাবে কো-অ্যাডমিন বানানো হয়েছে!" : "রোল পরিবর্তন করা হয়েছে।");
     } catch (error) {
-      console.error("Error toggling superadmin:", error);
+      console.error("Error updating role:", error);
       alert(`অপারেশনটি সফল হয়নি: ${error.message}`);
     } finally {
       setUpdating(false);
     }
   };
+
+  const isSuperAdmin = currentUserProfile?.role === "superadmin" || currentUserProfile?.superadmin === true;
 
   const filteredUsers = users.filter(user => 
     user.displayName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -86,24 +99,26 @@ export default function UsersAdmin() {
             </div>
           </div>
 
-          <button
-            onClick={(e) => handleToggleSuperadmin(selectedUser, e)}
-            disabled={updating}
-            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all ${
-              selectedUser.superadmin 
-                ? "bg-red-500 text-white hover:bg-red-600" 
-                : "bg-emerald-500 text-white hover:bg-emerald-600"
-            } disabled:opacity-50 disabled:cursor-not-allowed`}
-          >
-            {updating ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : selectedUser.superadmin ? (
-              <ShieldAlert className="h-4 w-4" />
-            ) : (
-              <ShieldCheck className="h-4 w-4" />
-            )}
-            {selectedUser.superadmin ? "সুপারঅ্যাডমিন থেকে সরান" : "সুপারঅ্যাডমিন বানান"}
-          </button>
+          {isSuperAdmin && (
+            <button
+              onClick={(e) => handleRoleChange(selectedUser, selectedUser.role === 'coadmin' ? 'user' : 'coadmin', e)}
+              disabled={updating}
+              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all ${
+                selectedUser.role === 'coadmin' || selectedUser.superadmin
+                  ? "bg-red-500 text-white hover:bg-red-600" 
+                  : "bg-emerald-500 text-white hover:bg-emerald-600"
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
+            >
+              {updating ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : selectedUser.role === 'coadmin' || selectedUser.superadmin ? (
+                <ShieldAlert className="h-4 w-4" />
+              ) : (
+                <ShieldCheck className="h-4 w-4" />
+              )}
+              {selectedUser.role === 'coadmin' || selectedUser.superadmin ? "অ্যাডমিন রোল সরান" : "কো-অ্যাডমিন বানান"}
+            </button>
+          )}
         </div>
 
         <div className="px-4 sm:px-8 lg:px-10 pb-20">
@@ -111,9 +126,14 @@ export default function UsersAdmin() {
             {/* Left: Basic Info */}
             <div className="lg:col-span-4 space-y-8">
               <div className="bg-white rounded-3xl border-2 border-black/5 p-8 text-center space-y-6 shadow-sm relative overflow-hidden">
-                {selectedUser.superadmin && (
+                {(selectedUser.role === 'superadmin' || selectedUser.superadmin) && (
                   <div className="absolute top-4 right-4 bg-[var(--accent-terracotta)] text-white p-2 rounded-lg shadow-lg">
                     <ShieldCheck className="h-5 w-5" />
+                  </div>
+                )}
+                {selectedUser.role === 'coadmin' && (
+                  <div className="absolute top-4 right-4 bg-emerald-500 text-white p-2 rounded-lg shadow-lg">
+                    <Shield className="h-5 w-5" />
                   </div>
                 )}
                 <div className="h-32 w-32 rounded-full border-4 border-[var(--accent-terracotta)] mx-auto overflow-hidden bg-black/5 shadow-xl">
@@ -126,9 +146,16 @@ export default function UsersAdmin() {
                   )}
                 </div>
                 <div>
-                  <div className="flex items-center justify-center gap-2">
+                  <div className="flex flex-col items-center justify-center gap-2">
                     <h2 className="text-xl font-black text-black leading-tight">{selectedUser.displayName || "নামহীন"}</h2>
-                    {selectedUser.superadmin && <span className="text-[8px] bg-[var(--accent-terracotta)] text-white px-2 py-0.5 rounded-full uppercase tracking-tighter">Superadmin</span>}
+                    <div className="flex gap-2">
+                      {(selectedUser.role === 'superadmin' || selectedUser.superadmin) && (
+                        <span className="text-[8px] bg-[var(--accent-terracotta)] text-white px-2 py-0.5 rounded-full uppercase tracking-tighter">Superadmin</span>
+                      )}
+                      {selectedUser.role === 'coadmin' && (
+                        <span className="text-[8px] bg-emerald-500 text-white px-2 py-0.5 rounded-full uppercase tracking-tighter">Coadmin</span>
+                      )}
+                    </div>
                   </div>
                   <p className="text-xs font-bold text-black/40 uppercase tracking-widest mt-1">{selectedUser.email}</p>
                 </div>
@@ -205,53 +232,62 @@ export default function UsersAdmin() {
         ) : filteredUsers.length > 0 ? (
           <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {filteredUsers.map((user, index) => (
-              <div
-                key={user.id}
-                onClick={() => setSelectedUser(user)}
-                className={`group relative flex items-center gap-4 p-4 rounded-2xl border-2 bg-white hover:border-[var(--accent-terracotta)] hover:shadow-xl transition-all cursor-pointer ${
-                  user.superadmin ? "border-[var(--accent-terracotta)]/40 shadow-sm" : "border-black/5"
-                }`}
-              >
-                {/* Serial Indicator */}
-                <div className="absolute -top-2 -left-2 h-6 w-6 rounded-full bg-[var(--accent-terracotta)] text-white flex items-center justify-center text-[8px] font-black border-2 border-[var(--accent-terracotta)] z-10">
-                  {index + 1}
-                </div>
-
-                <div className="h-12 w-12 rounded-full border-2 border-black/5 overflow-hidden bg-black/5 shrink-0 group-hover:border-black/20 transition-colors relative">
-                  {user.photoURL ? (
-                    <img src={user.photoURL} alt="" className="h-full w-full object-cover" />
-                  ) : (
-                    <div className="h-full w-full flex items-center justify-center text-black/10">
-                      <User className="h-6 w-6" />
-                    </div>
-                  )}
-                  {user.superadmin && (
-                    <div className="absolute inset-0 bg-[var(--accent-terracotta)]/10 flex items-center justify-center">
-                      <ShieldCheck className="h-4 w-4 text-[var(--accent-terracotta)]" />
-                    </div>
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <h3 className="text-sm font-black text-black truncate leading-tight group-hover:text-[var(--accent-terracotta)] transition-colors">{user.displayName || "নামহীন"}</h3>
-                    {user.superadmin && <ShieldCheck className="h-3 w-3 text-[var(--accent-terracotta)] shrink-0" />}
-                  </div>
-                  <p className="text-[10px] font-bold text-black/30 truncate">{user.email}</p>
-                </div>
-
-                {/* Quick Toggle Button */}
-                <button
-                  onClick={(e) => handleToggleSuperadmin(user, e)}
-                  disabled={updating}
-                  className={`p-2.5 rounded-xl border-2 transition-all ${
-                    user.superadmin 
-                      ? "border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white" 
-                      : "border-emerald-500/20 text-emerald-500 hover:bg-emerald-500 hover:text-white"
-                  } disabled:opacity-50`}
-                  title={user.superadmin ? "সুপারঅ্যাডমিন থেকে সরান" : "সুপারঅ্যাডমিন বানান"}
+                <div
+                  key={user.id}
+                  onClick={() => setSelectedUser(user)}
+                  className={`group relative flex items-center gap-4 p-4 rounded-2xl border-2 bg-white hover:border-[var(--accent-terracotta)] hover:shadow-xl transition-all cursor-pointer ${
+                    (user.role === 'superadmin' || user.superadmin) ? "border-[var(--accent-terracotta)]/40 shadow-sm" : 
+                    user.role === 'coadmin' ? "border-emerald-500/40 shadow-sm" : "border-black/5"
+                  }`}
                 >
-                  {user.superadmin ? <ShieldAlert className="h-4 w-4" /> : <ShieldCheck className="h-4 w-4" />}
-                </button>
+                  {/* Serial Indicator */}
+                  <div className="absolute -top-2 -left-2 h-6 w-6 rounded-full bg-[var(--accent-terracotta)] text-white flex items-center justify-center text-[8px] font-black border-2 border-[var(--accent-terracotta)] z-10">
+                    {index + 1}
+                  </div>
+
+                  <div className="h-12 w-12 rounded-full border-2 border-black/5 overflow-hidden bg-black/5 shrink-0 group-hover:border-black/20 transition-colors relative">
+                    {user.photoURL ? (
+                      <img src={user.photoURL} alt="" className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="h-full w-full flex items-center justify-center text-black/10">
+                        <User className="h-6 w-6" />
+                      </div>
+                    )}
+                    {(user.role === 'superadmin' || user.superadmin) && (
+                      <div className="absolute inset-0 bg-[var(--accent-terracotta)]/10 flex items-center justify-center">
+                        <ShieldCheck className="h-4 w-4 text-[var(--accent-terracotta)]" />
+                      </div>
+                    )}
+                    {user.role === 'coadmin' && (
+                      <div className="absolute inset-0 bg-emerald-500/10 flex items-center justify-center">
+                        <Shield className="h-4 w-4 text-emerald-500" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <h3 className="text-sm font-black text-black truncate leading-tight group-hover:text-[var(--accent-terracotta)] transition-colors">{user.displayName || "নামহীন"}</h3>
+                      {(user.role === 'superadmin' || user.superadmin) && <ShieldCheck className="h-3 w-3 text-[var(--accent-terracotta)] shrink-0" />}
+                      {user.role === 'coadmin' && <Shield className="h-3 w-3 text-emerald-500 shrink-0" />}
+                    </div>
+                    <p className="text-[10px] font-bold text-black/30 truncate">{user.email}</p>
+                  </div>
+
+                  {/* Quick Toggle Button - Only for Superadmin */}
+                  {isSuperAdmin && (
+                    <button
+                      onClick={(e) => handleRoleChange(user, user.role === 'coadmin' ? 'user' : 'coadmin', e)}
+                      disabled={updating || user.role === 'superadmin' || user.superadmin}
+                      className={`p-2.5 rounded-xl border-2 transition-all ${
+                        user.role === 'coadmin' 
+                          ? "border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white" 
+                          : "border-emerald-500/20 text-emerald-500 hover:bg-emerald-500 hover:text-white"
+                      } disabled:opacity-30 disabled:cursor-not-allowed`}
+                      title={user.role === 'coadmin' ? "অ্যাডমিন রোল সরান" : "কো-অ্যাডমিন বানান"}
+                    >
+                      {user.role === 'coadmin' ? <ShieldAlert className="h-4 w-4" /> : <ShieldCheck className="h-4 w-4" />}
+                    </button>
+                  )}
 
                 <div className="p-2 rounded-lg bg-black/5 text-black/20 group-hover:bg-[var(--accent-terracotta)] group-hover:text-white transition-all">
                   <ArrowLeft className="h-3 w-3 rotate-180" />

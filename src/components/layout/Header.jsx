@@ -100,8 +100,8 @@ function Header({ isSidebarHidden, toggleSidebar }) {
     { label: t("nav.donate", "অনুদান"), to: "/donation", icon: Heart },
   ];
 
-  // Add Admin if user is superadmin
-  if (profile?.superadmin) {
+  // Add Admin if user is superadmin or coadmin
+  if (profile?.role === "superadmin" || profile?.role === "coadmin" || profile?.superadmin) {
     navigation.push({ label: t("nav.admin", "Admin"), to: "/admin", icon: ShieldCheck });
   }
 

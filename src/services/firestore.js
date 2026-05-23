@@ -226,6 +226,10 @@ export async function syncUserWithFirestore(user) {
       await setUserProfile(user.uid, userData);
       return { ...userData, isNewUser: true };
     } else {
+      // Migrate old superadmin boolean to role if necessary
+      if (profile.superadmin && !profile.role) {
+        userData.role = "superadmin";
+      }
       // Update existing profile with latest basic info from Google
       await setUserProfile(user.uid, userData);
       return { ...profile, ...userData, isNewUser: false };
@@ -254,11 +258,17 @@ export async function getAllUsers() {
   }
 }
 
-export async function toggleUserSuperadmin(uid, currentStatus) {
+export async function updateUserRole(uid, role) {
   if (!db) throw new Error("Firestore not initialized");
   const userRef = doc(db, "users", uid);
-  await setDoc(userRef, { superadmin: !currentStatus }, { merge: true });
-  return !currentStatus;
+  await setDoc(userRef, { role: role }, { merge: true });
+  return role;
+}
+
+export async function toggleUserSuperadmin(uid, currentStatus) {
+  // Keeping this for compatibility but updating to use role
+  const newRole = currentStatus ? "user" : "coadmin";
+  return await updateUserRole(uid, newRole);
 }
 
 // Contact Messages
