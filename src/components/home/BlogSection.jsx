@@ -35,13 +35,13 @@ function BlogSection() {
           <p className="text-[10px] font-black uppercase tracking-[0.25em] text-black/40 mb-1">
             Blog & Updates
           </p>
-          <h2 className="text-xl sm:text-4xl font-black text-black tracking-tight leading-tight">
+          <h2 className="text-xl sm:text-2xl font-black text-black tracking-tight leading-tight">
             {t("tabs.posts", "NovoCulture পোস্ট ও আপডেট")}
           </h2>
         </div>
         <Link 
           to="/posts"
-          className="flex items-center gap-2 rounded-lg sm:rounded-xl bg-black px-3 sm:px-6 py-2 sm:py-3 text-[10px] sm:text-xs font-black uppercase tracking-widest text-white hover:opacity-80 transition-all shrink-0 shadow-lg shadow-black/20"
+          className="flex items-center gap-2 rounded-lg sm:rounded-xl bg-black px-3 sm:px-6 py-2 sm:py-3 text-[10px] sm:text-[10px] font-black uppercase tracking-widest text-white hover:opacity-80 transition-all shrink-0 shadow-lg shadow-black/20"
         >
           <span className="hidden sm:inline">{t("view_all", "সবগুলো দেখুন")}</span>
           <span className="sm:hidden">সবগুলো</span>
@@ -55,7 +55,7 @@ function BlogSection() {
             <Link
               key={`${post.id}-${idx}`}
               to={`/posts/${post.id}`}
-              className="w-[280px] sm:w-[350px] group block rounded-2xl bg-white p-4 sm:p-5 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl shrink-0"
+              className="w-[280px] sm:w-[320px] group block rounded-2xl bg-white p-4 sm:p-5 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl shrink-0"
             >
               <div className="aspect-[16/9] rounded-xl overflow-hidden mb-4 relative">
                 {post.image ? (
@@ -77,10 +77,10 @@ function BlogSection() {
                   <Calendar className="h-3 w-3" />
                   {new Date(post.date).toLocaleDateString(lang === "bn" ? "bn-BD" : "en-US")}
                 </div>
-                <h3 className="text-lg font-black text-black leading-tight group-hover:text-black transition-colors line-clamp-2">
+                <h3 className="text-base font-black text-black leading-tight group-hover:text-black transition-colors line-clamp-2">
                   {post.bn?.title || post.en?.title}
                 </h3>
-                <p className="text-xs font-bold text-black/60 line-clamp-2 leading-relaxed">
+                <p className="text-[11px] font-bold text-black/60 line-clamp-2 leading-relaxed">
                   {(post.bn?.content || post.en?.content || "").replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ').replace(/[#*`]/g, '')}
                 </p>
               </div>

@@ -59,14 +59,14 @@ function JoinSection() {
       <div id="ongoing-activities" className="mb-12 sm:mb-20 scroll-mt-20 overflow-hidden">
         <div className="flex items-center justify-between mb-6 sm:mb-10 gap-4">
           <div className="text-left">
-            <h2 className="text-xl sm:text-5xl font-black text-[var(--text-brown-strong)] mb-1 sm:mb-4">
+            <h2 className="text-xl sm:text-3xl font-black text-[var(--text-brown-strong)] mb-1 sm:mb-4">
               চলমান কার্যক্রমসমূহ
             </h2>
             <div className="h-1 w-12 sm:h-1.5 sm:w-24 bg-[var(--accent-terracotta)] rounded-full" />
           </div>
           <button
             onClick={() => navigate("/projects")}
-            className="flex items-center gap-2 rounded-lg sm:rounded-xl bg-[var(--accent-terracotta)] px-3 sm:px-6 py-2 sm:py-3 text-[10px] sm:text-base font-bold text-white transition-all hover:bg-[var(--accent-terracotta-dark)] hover:scale-105 active:scale-95 shadow-lg shadow-orange-500/20 shrink-0"
+            className="flex items-center gap-2 rounded-lg sm:rounded-xl bg-[var(--accent-terracotta)] px-3 sm:px-6 py-2 sm:py-3 text-[10px] sm:text-[11px] font-bold text-white transition-all hover:bg-[var(--accent-terracotta-dark)] hover:scale-105 active:scale-95 shadow-lg shadow-orange-500/20 shrink-0"
           >
             <span className="hidden sm:inline">সবগুলো কার্যক্রম দেখুন</span>
             <span className="sm:hidden">সবগুলো</span>
@@ -82,7 +82,7 @@ function JoinSection() {
               const image = proj.image || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=800&auto=format&fit=crop";
 
               return (
-                <div key={`${proj.id}-${idx}`} className="w-[280px] sm:w-[350px] flex flex-col bg-white rounded-2xl sm:rounded-3xl shadow-lg overflow-hidden transition-all hover:shadow-xl shrink-0">
+                <div key={`${proj.id}-${idx}`} className="w-[280px] sm:w-[320px] flex flex-col bg-white rounded-2xl sm:rounded-3xl shadow-lg overflow-hidden transition-all hover:shadow-xl shrink-0">
                   <div className="aspect-[16/10] w-full overflow-hidden">
                     <img 
                       src={image} 
@@ -97,16 +97,16 @@ function JoinSection() {
                         {t("tabs.projects", "প্রকল্প")}
                       </span>
                     </div>
-                    <h4 className="text-base sm:text-xl font-black text-[var(--text-brown-strong)] mb-2 leading-tight line-clamp-1">
+                    <h4 className="text-base sm:text-lg font-black text-[var(--text-brown-strong)] mb-2 leading-tight line-clamp-1">
                       {title}
                     </h4>
-                    <p className="text-[11px] sm:text-sm text-[var(--text-brown)]/60 font-medium leading-relaxed mb-4 line-clamp-2">
+                    <p className="text-[11px] sm:text-[12px] text-[var(--text-brown)]/60 font-medium leading-relaxed mb-4 line-clamp-2">
                       {desc.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ').replace(/[#*`]/g, '')}
                     </p>
                     <div className="mt-auto">
                       <button 
                         onClick={() => navigate(`/projects/${proj.id}`)}
-                        className="w-full rounded-xl bg-[var(--accent-terracotta)] py-2.5 sm:py-3 text-xs sm:text-sm font-bold text-white transition-all hover:bg-[var(--accent-terracotta-dark)] hover:shadow-lg active:scale-95 shadow-md shadow-orange-900/10"
+                        className="w-full rounded-xl bg-[var(--accent-terracotta)] py-2.5 sm:py-3 text-xs sm:text-xs font-bold text-white transition-all hover:bg-[var(--accent-terracotta-dark)] hover:shadow-lg active:scale-95 shadow-md shadow-orange-900/10"
                       >
                         বিস্তারিত দেখুন
                       </button>
@@ -124,15 +124,15 @@ function JoinSection() {
         <div className="mb-12 sm:mb-20 overflow-hidden">
           <div className="flex items-center justify-between mb-6 sm:mb-10 gap-4">
             <div className="text-left">
-              <h2 className="text-xl sm:text-5xl font-black text-[var(--text-brown-strong)] mb-1 sm:mb-4">
+              <h2 className="text-xl sm:text-3xl font-black text-[var(--text-brown-strong)] mb-1 sm:mb-4">
                 অনুদান তহবিলসমূহ
               </h2>
               <div className="h-1 w-12 sm:h-1.5 sm:w-24 bg-[var(--accent-terracotta)] rounded-full mb-1 sm:mb-4" />
-              <p className="hidden sm:block text-sm sm:text-lg text-[var(--text-brown)]/60 font-medium">চলুন একসাথে পরিবর্তন আনি</p>
+              <p className="hidden sm:block text-sm sm:text-base text-[var(--text-brown)]/60 font-medium">চলুন একসাথে পরিবর্তন আনি</p>
             </div>
             <button
               onClick={() => navigate("/funds")}
-              className="flex items-center gap-2 rounded-lg sm:rounded-xl bg-[var(--accent-terracotta)] px-3 sm:px-6 py-2 sm:py-3 text-[10px] sm:text-base font-bold text-white transition-all hover:bg-[var(--accent-terracotta-dark)] hover:scale-105 active:scale-95 shadow-lg shadow-orange-500/20 shrink-0"
+              className="flex items-center gap-2 rounded-lg sm:rounded-xl bg-[var(--accent-terracotta)] px-3 sm:px-6 py-2 sm:py-3 text-[10px] sm:text-[11px] font-bold text-white transition-all hover:bg-[var(--accent-terracotta-dark)] hover:scale-105 active:scale-95 shadow-lg shadow-orange-500/20 shrink-0"
             >
               <span>তহবিলসমূহ</span>
               <ArrowRight className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
@@ -147,7 +147,7 @@ function JoinSection() {
                 const image = fund.image || "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=800&auto=format&fit=crop";
 
                 return (
-                  <div key={`${fund.id}-${idx}`} className="w-[280px] sm:w-[350px] flex flex-col bg-white rounded-2xl sm:rounded-3xl shadow-lg overflow-hidden transition-all hover:shadow-xl shrink-0">
+                  <div key={`${fund.id}-${idx}`} className="w-[280px] sm:w-[320px] flex flex-col bg-white rounded-2xl sm:rounded-3xl shadow-lg overflow-hidden transition-all hover:shadow-xl shrink-0">
                     <div className="aspect-[16/9] w-full overflow-hidden">
                       <img 
                         src={image} 
@@ -156,16 +156,16 @@ function JoinSection() {
                       />
                     </div>
                     <div className="p-4 sm:p-6 flex flex-col flex-1 text-center">
-                      <h4 className="text-base sm:text-xl font-black text-[var(--text-brown-strong)] mb-2 leading-tight min-h-[2.5rem] sm:min-h-[3rem] flex items-center justify-center line-clamp-2">
+                      <h4 className="text-base sm:text-lg font-black text-[var(--text-brown-strong)] mb-2 leading-tight min-h-[2.5rem] sm:min-h-[3rem] flex items-center justify-center line-clamp-2">
                         {title}
                       </h4>
-                      <p className="text-[11px] sm:text-sm text-[var(--text-brown)]/60 font-medium leading-relaxed mb-4 line-clamp-2">
+                      <p className="text-[11px] sm:text-[12px] text-[var(--text-brown)]/60 font-medium leading-relaxed mb-4 line-clamp-2">
                         {desc.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ').replace(/[#*`]/g, '')}
                       </p>
                       <div className="mt-auto">
                         <button 
                           onClick={() => navigate("/donation")}
-                          className="w-full rounded-xl bg-[var(--accent-terracotta)] py-2.5 sm:py-3.5 text-xs sm:text-base font-bold text-white transition-all hover:bg-[var(--accent-terracotta-dark)] hover:shadow-lg active:scale-95 shadow-lg shadow-orange-900/10"
+                          className="w-full rounded-xl bg-[var(--accent-terracotta)] py-2.5 sm:py-3.5 text-xs sm:text-sm font-bold text-white transition-all hover:bg-[var(--accent-terracotta-dark)] hover:shadow-lg active:scale-95 shadow-lg shadow-orange-900/10"
                         >
                           অনুদান করুন
                         </button>
@@ -183,14 +183,14 @@ function JoinSection() {
           <div className="w-full">
             <div className="flex items-center justify-between mb-8 sm:mb-12 gap-4">
               <div className="text-left">
-                <h2 className="text-xl sm:text-5xl font-black text-[var(--text-brown-strong)] mb-1 sm:mb-4">
+                <h2 className="text-xl sm:text-3xl font-black text-[var(--text-brown-strong)] mb-1 sm:mb-4">
                   আমাদের চিত্রশালা
                 </h2>
                 <div className="h-1 w-12 sm:h-1.5 sm:w-24 bg-[var(--accent-terracotta)] rounded-full" />
               </div>
               <button
                 onClick={() => navigate("/media")}
-                className="flex items-center gap-2 rounded-lg sm:rounded-xl border-2 border-[var(--text-brown)] px-3 sm:px-8 py-2 sm:py-4 text-[10px] sm:text-lg font-bold text-[var(--text-brown)] transition-all hover:bg-[var(--text-brown)] hover:text-white hover:scale-105 active:scale-95 shadow-lg shadow-black/5 shrink-0"
+                className="flex items-center gap-2 rounded-lg sm:rounded-xl border-2 border-[var(--text-brown)] px-3 sm:px-8 py-2 sm:py-4 text-[10px] sm:text-base font-bold text-[var(--text-brown)] transition-all hover:bg-[var(--text-brown)] hover:text-white hover:scale-105 active:scale-95 shadow-lg shadow-black/5 shrink-0"
               >
                 <span className="hidden sm:inline">পুরো চিত্রশালা দেখুন</span>
                 <span className="sm:hidden">পুরো চিত্রশালা</span>
@@ -202,53 +202,30 @@ function JoinSection() {
           </div>
         </div>
 
-        <div>
-            <p className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em] text-[var(--text-brown)]/50">
-              {t("join_us_label", "Join Us")}
-            </p>
-            <h2 className="mt-2 text-xl sm:text-3xl font-black text-[var(--text-brown-strong)]">
-              {t("join_us_title", "Ways to participate in the mission")}
-            </h2>
-          </div>
+        <div className="flex flex-col items-center justify-center text-center mb-8 sm:mb-12">
+          <h2 className="text-xl sm:text-3xl font-black text-[var(--text-brown-strong)] mb-2">
+            মিশনে অংশগ্রহণের উপায়সমূহ
+          </h2>
+          <div className="h-1 w-12 sm:h-1.5 sm:w-20 bg-[var(--accent-terracotta)] rounded-full" />
+        </div>
       </div>
 
-      {/* Universal List View */}
-      <div className="flex flex-col gap-4 sm:grid sm:grid-cols-2 sm:gap-6 mb-20">
-        {joinItems.map((item) => (
-          <div key={item.id} className="group flex flex-col bg-white rounded-2xl sm:rounded-[2.5rem] border border-[var(--text-brown)]/5 shadow-md sm:shadow-xl p-4 sm:p-8 transition-all hover:shadow-lg sm:hover:shadow-2xl sm:hover:-translate-y-1">
-            <div className="mb-4 sm:mb-6">
-              <div className="flex items-center gap-4 mb-3 sm:mb-4">
-                <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl sm:rounded-2xl bg-[var(--accent-terracotta)] text-white shadow-lg shadow-[var(--accent-terracotta)]/20 transition-transform group-hover:scale-110 shrink-0">
-                  <item.icon className="h-5 w-5 sm:h-6 sm:w-6" />
-                </div>
-                <h3 className="text-base sm:text-xl font-black text-[var(--text-brown-strong)] tracking-tight">
-                  {t(`join.${item.id}`, item.label)}
-                </h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-12 sm:mb-20">
+          {joinItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => navigate(`/join/form/${item.id}`)}
+              className="flex flex-col items-center gap-2 sm:gap-4 p-4 sm:p-6 rounded-2xl bg-white border-2 border-black/5 hover:border-[var(--accent-terracotta)] hover:shadow-xl transition-all group"
+            >
+              <div className="h-10 w-10 sm:h-14 sm:w-14 rounded-xl bg-[var(--bg-cream)] flex items-center justify-center text-[var(--accent-terracotta)] group-hover:bg-[var(--accent-terracotta)] group-hover:text-white transition-all">
+                <item.icon className="h-5 w-5 sm:h-7 sm:w-7" />
               </div>
-              <p className="text-[11px] sm:text-sm text-[var(--text-brown)]/70 font-medium leading-relaxed">
-                {t(`join.${item.id}_desc`, `Join our mission as a ${item.label.toLowerCase()} and help us make a lasting impact.`)}
-              </p>
-            </div>
-            
-            <div className="mt-auto flex flex-row sm:flex-row gap-3 sm:gap-4">
-              <button
-                onClick={() => navigate(`/join/form/${item.id}`)}
-                className="flex-1 flex items-center justify-center gap-2 sm:gap-3 rounded-xl sm:rounded-2xl bg-[var(--accent-terracotta)] py-3 sm:py-4 text-xs sm:text-lg font-bold text-white shadow-xl shadow-[var(--accent-terracotta)]/20 transition-all hover:bg-[var(--accent-terracotta-dark)] hover:scale-[1.02] active:scale-95"
-              >
-                <Send className="h-4 w-4 sm:h-5 sm:w-5" />
-                <span>{t("start_now", "শুরু করুন")}</span>
-              </button>
-              <button
-                onClick={() => navigate(`/join/list/${item.id}`)}
-                className="flex-1 flex items-center justify-center gap-2 sm:gap-3 rounded-xl sm:rounded-2xl border-2 border-[var(--text-brown)]/10 bg-white py-3 sm:py-4 text-xs sm:text-lg font-bold text-[var(--text-brown)] transition-all hover:bg-[var(--text-brown)] hover:text-white hover:border-[var(--text-brown)] hover:scale-[1.02] active:scale-95"
-              >
-                <ClipboardList className="h-4 w-4 sm:h-5 sm:w-5" />
-                <span>{t("view_list", "লিস্ট দেখুন")}</span>
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
+              <span className="text-[10px] sm:text-sm font-black text-[var(--text-brown-strong)] uppercase tracking-wider text-center">
+                {item.label}
+              </span>
+            </button>
+          ))}
+        </div>
 
       {/* YouTube Video Section - Moved from Hero */}
       <div className="w-full max-w-4xl mx-auto py-12 border-t-2 border-[var(--text-brown)]/5">
