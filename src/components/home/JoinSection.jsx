@@ -202,30 +202,53 @@ function JoinSection() {
           </div>
         </div>
 
-        <div className="flex flex-col items-center justify-center text-center mb-8 sm:mb-12">
-          <h2 className="text-xl sm:text-3xl font-black text-[var(--text-brown-strong)] mb-2">
-            মিশনে অংশগ্রহণের উপায়সমূহ
-          </h2>
-          <div className="h-1 w-12 sm:h-1.5 sm:w-20 bg-[var(--accent-terracotta)] rounded-full" />
-        </div>
+        <div>
+            <p className="text-[10px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-brown)]/50">
+              {t("join_us_label", "Join Us")}
+            </p>
+            <h2 className="mt-2 text-xl sm:text-2xl font-black text-[var(--text-brown-strong)]">
+              {t("join_us_title", "Ways to participate in the mission")}
+            </h2>
+          </div>
       </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-12 sm:mb-20">
-          {joinItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => navigate(`/join/form/${item.id}`)}
-              className="flex flex-col items-center gap-2 sm:gap-4 p-4 sm:p-6 rounded-2xl bg-white border-2 border-black/5 hover:border-[var(--accent-terracotta)] hover:shadow-xl transition-all group"
-            >
-              <div className="h-10 w-10 sm:h-14 sm:w-14 rounded-xl bg-[var(--bg-cream)] flex items-center justify-center text-[var(--accent-terracotta)] group-hover:bg-[var(--accent-terracotta)] group-hover:text-white transition-all">
-                <item.icon className="h-5 w-5 sm:h-7 sm:w-7" />
+      {/* Universal List View */}
+      <div className="flex flex-col gap-4 sm:grid sm:grid-cols-2 sm:gap-6 mb-20">
+        {joinItems.map((item) => (
+          <div key={item.id} className="group flex flex-col bg-white rounded-2xl sm:rounded-[2rem] border border-[var(--text-brown)]/5 shadow-md sm:shadow-lg p-4 sm:p-6 transition-all hover:shadow-lg sm:hover:shadow-xl sm:hover:-translate-y-1">
+            <div className="mb-4 sm:mb-5">
+              <div className="flex items-center gap-4 mb-3 sm:mb-3">
+                <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-xl bg-[var(--accent-terracotta)] text-white shadow-lg shadow-[var(--accent-terracotta)]/20 transition-transform group-hover:scale-110 shrink-0">
+                  <item.icon className="h-5 w-5 sm:h-5 sm:w-5" />
+                </div>
+                <h3 className="text-base sm:text-lg font-black text-[var(--text-brown-strong)] tracking-tight">
+                  {t(`join.${item.id}`, item.label)}
+                </h3>
               </div>
-              <span className="text-[10px] sm:text-sm font-black text-[var(--text-brown-strong)] uppercase tracking-wider text-center">
-                {item.label}
-              </span>
-            </button>
-          ))}
-        </div>
+              <p className="text-[11px] sm:text-[13px] text-[var(--text-brown)]/70 font-medium leading-relaxed">
+                {t(`join.${item.id}_desc`, `Join our mission as a ${item.label.toLowerCase()} and help us make a lasting impact.`)}
+              </p>
+            </div>
+            
+            <div className="mt-auto flex flex-row sm:flex-row gap-3 sm:gap-3">
+              <button
+                onClick={() => navigate(`/join/form/${item.id}`)}
+                className="flex-1 flex items-center justify-center gap-2 sm:gap-2 rounded-xl sm:rounded-xl bg-[var(--accent-terracotta)] py-3 sm:py-3.5 text-xs sm:text-base font-bold text-white shadow-xl shadow-[var(--accent-terracotta)]/20 transition-all hover:bg-[var(--accent-terracotta-dark)] hover:scale-[1.02] active:scale-95"
+              >
+                <Send className="h-4 w-4 sm:h-4 sm:w-4" />
+                <span>{t("start_now", "শুরু করুন")}</span>
+              </button>
+              <button
+                onClick={() => navigate(`/join/list/${item.id}`)}
+                className="flex-1 flex items-center justify-center gap-2 sm:gap-2 rounded-xl sm:rounded-xl border-2 border-[var(--text-brown)]/10 bg-white py-3 sm:py-3.5 text-xs sm:text-base font-bold text-[var(--text-brown)] transition-all hover:bg-[var(--text-brown)] hover:text-white hover:border-[var(--text-brown)] hover:scale-[1.02] active:scale-95"
+              >
+                <ClipboardList className="h-4 w-4 sm:h-4 sm:w-4" />
+                <span>{t("view_list", "লিস্ট দেখুন")}</span>
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
 
       {/* YouTube Video Section - Moved from Hero */}
       <div className="w-full max-w-4xl mx-auto py-12 border-t-2 border-[var(--text-brown)]/5">
