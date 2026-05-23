@@ -13,7 +13,10 @@ import JoinFormPage from "./pages/JoinFormPage.jsx";
 import DonationPage from "./pages/DonationPage.jsx";
 import DonationsListPage from "./pages/DonationsListPage.jsx";
 import UpdateListPage from "./pages/UpdateListPage.jsx";
+import PostDetailPage from "./pages/PostDetailPage.jsx";
 import ExecutiveMemberDetail from "./pages/ExecutiveMemberDetail.jsx";
+import SubmissionDetailPage from "./pages/SubmissionDetailPage.jsx";
+import CustomFormPage from "./pages/CustomFormPage.jsx";
 
 function App() {
   return (
@@ -30,10 +33,15 @@ function App() {
         <Route path="profile" element={<ProfilePage />} />
         <Route path="executive-body/:id" element={<ExecutiveMemberDetail />} />
         <Route path="admin" element={<AdminPage />} />
+        <Route path="admin/:tab" element={<AdminPage />} />
+        <Route path="admin/submission/:formId/:submissionId" element={<SubmissionDetailPage />} />
         <Route path="notices" element={<UpdateListPage category="notice" />} />
+        <Route path="notices/:id" element={<PostDetailPage />} />
         <Route path="posts" element={<UpdateListPage category="posts" />} />
+        <Route path="posts/:id" element={<PostDetailPage />} />
         <Route path="join/list/:category" element={<JoinListPage />} />
         <Route path="join/form/:category" element={<JoinFormPage />} />
+        <Route path="f/:slug" element={<CustomFormPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

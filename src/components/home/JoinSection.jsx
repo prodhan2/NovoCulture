@@ -57,55 +57,56 @@ function JoinSection() {
     <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       {/* Projects Update Section (Ongoing Activities) */}
       <div id="ongoing-activities" className="mb-12 sm:mb-20 scroll-mt-20 overflow-hidden">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-12 gap-6">
+        <div className="flex items-center justify-between mb-6 sm:mb-10 gap-4">
           <div className="text-left">
-            <h2 className="text-2xl sm:text-5xl font-black text-[var(--text-brown-strong)] mb-2 sm:mb-4">
+            <h2 className="text-xl sm:text-5xl font-black text-[var(--text-brown-strong)] mb-1 sm:mb-4">
               চলমান কার্যক্রমসমূহ
             </h2>
-            <div className="h-1 w-16 sm:h-1.5 sm:w-24 bg-[var(--accent-terracotta)] rounded-full" />
+            <div className="h-1 w-12 sm:h-1.5 sm:w-24 bg-[var(--accent-terracotta)] rounded-full" />
           </div>
           <button
             onClick={() => navigate("/projects")}
-            className="flex items-center gap-2 rounded-xl bg-[var(--accent-terracotta)] px-6 py-3 text-sm sm:text-base font-bold text-white transition-all hover:bg-[var(--accent-terracotta-dark)] hover:scale-105 active:scale-95 shadow-lg shadow-orange-500/20 w-fit"
+            className="flex items-center gap-2 rounded-lg sm:rounded-xl bg-[var(--accent-terracotta)] px-3 sm:px-6 py-2 sm:py-3 text-[10px] sm:text-base font-bold text-white transition-all hover:bg-[var(--accent-terracotta-dark)] hover:scale-105 active:scale-95 shadow-lg shadow-orange-500/20 shrink-0"
           >
-            <span>সবগুলো কার্যক্রম দেখুন</span>
-            <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="hidden sm:inline">সবগুলো কার্যক্রম দেখুন</span>
+            <span className="sm:hidden">সবগুলো</span>
+            <ArrowRight className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
           </button>
         </div>
         
-        <div className="-mx-4 sm:-mx-6 lg:-mx-8">
-          <div className="animate-infinite-scroll flex gap-6 py-4 hide-scrollbar">
+        <div className="-mx-4 sm:-mx-6 lg:-mx-8 overflow-x-auto hide-scrollbar cursor-grab active:cursor-grabbing">
+          <div className="animate-infinite-scroll flex gap-6 py-4 hover:[animation-play-state:paused] active:[animation-play-state:paused]">
             {(projects.length > 0 ? [...projects, ...projects] : []).map((proj, idx) => {
               const title = proj.bn?.title || proj.en?.title || "";
               const desc = proj.bn?.content || proj.en?.content || "";
               const image = proj.image || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=800&auto=format&fit=crop";
 
               return (
-                <div key={`${proj.id}-${idx}`} className="w-[75vw] sm:w-[400px] flex flex-col bg-white rounded-[1.5rem] sm:rounded-[2rem] border border-[var(--text-brown)]/5 shadow-xl overflow-hidden transition-all hover:shadow-2xl shrink-0">
-                  <div className="aspect-[4/3] w-full overflow-hidden">
+                <div key={`${proj.id}-${idx}`} className="w-[280px] sm:w-[350px] flex flex-col bg-white rounded-2xl sm:rounded-3xl shadow-lg overflow-hidden transition-all hover:shadow-xl shrink-0">
+                  <div className="aspect-[16/10] w-full overflow-hidden">
                     <img 
                       src={image} 
                       alt={title} 
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
                   </div>
-                  <div className="p-5 sm:p-8 flex flex-col flex-1">
-                    <div className="flex items-center gap-2 text-[var(--accent-terracotta)] mb-2 sm:mb-4">
-                      <Layout className="h-3 w-3 sm:h-4 sm:w-4" />
-                      <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest">
+                  <div className="p-4 sm:p-6 flex flex-col flex-1">
+                    <div className="flex items-center gap-2 text-[var(--accent-terracotta)] mb-2">
+                      <Layout className="h-3 w-3" />
+                      <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest">
                         {t("tabs.projects", "প্রকল্প")}
                       </span>
                     </div>
-                    <h4 className="text-lg sm:text-2xl font-black text-[var(--text-brown-strong)] mb-2 sm:mb-4 leading-tight line-clamp-1">
+                    <h4 className="text-base sm:text-xl font-black text-[var(--text-brown-strong)] mb-2 leading-tight line-clamp-1">
                       {title}
                     </h4>
-                    <p className="text-xs sm:text-base text-[var(--text-brown)]/60 font-medium leading-relaxed mb-4 sm:mb-8 line-clamp-2">
-                      {desc.replace(/[#*`]/g, '')}
+                    <p className="text-[11px] sm:text-sm text-[var(--text-brown)]/60 font-medium leading-relaxed mb-4 line-clamp-2">
+                      {desc.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ').replace(/[#*`]/g, '')}
                     </p>
                     <div className="mt-auto">
                       <button 
                         onClick={() => navigate(`/projects/${proj.id}`)}
-                        className="w-full rounded-xl sm:rounded-2xl border-2 border-[var(--accent-terracotta)]/20 bg-[var(--accent-terracotta)]/5 py-3 sm:py-4 text-sm sm:text-base font-bold text-[var(--accent-terracotta)] transition-all hover:bg-[var(--accent-terracotta)] hover:text-white"
+                        className="w-full rounded-xl bg-[var(--accent-terracotta)] py-2.5 sm:py-3 text-xs sm:text-sm font-bold text-white transition-all hover:bg-[var(--accent-terracotta-dark)] hover:shadow-lg active:scale-95 shadow-md shadow-orange-900/10"
                       >
                         বিস্তারিত দেখুন
                       </button>
@@ -121,50 +122,50 @@ function JoinSection() {
       <div className="mb-12">
         {/* Donation Funds Section */}
         <div className="mb-12 sm:mb-20 overflow-hidden">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-12 gap-6">
+          <div className="flex items-center justify-between mb-6 sm:mb-10 gap-4">
             <div className="text-left">
-              <h2 className="text-2xl sm:text-5xl font-black text-[var(--text-brown-strong)] mb-2 sm:mb-4">
+              <h2 className="text-xl sm:text-5xl font-black text-[var(--text-brown-strong)] mb-1 sm:mb-4">
                 অনুদান তহবিলসমূহ
               </h2>
-              <div className="h-1 w-16 sm:h-1.5 sm:w-24 bg-[var(--accent-terracotta)] rounded-full mb-2 sm:mb-4" />
-              <p className="text-sm sm:text-lg text-[var(--text-brown)]/60 font-medium">চলুন একসাথে পরিবর্তন আনি</p>
+              <div className="h-1 w-12 sm:h-1.5 sm:w-24 bg-[var(--accent-terracotta)] rounded-full mb-1 sm:mb-4" />
+              <p className="hidden sm:block text-sm sm:text-lg text-[var(--text-brown)]/60 font-medium">চলুন একসাথে পরিবর্তন আনি</p>
             </div>
             <button
               onClick={() => navigate("/funds")}
-              className="flex items-center gap-2 rounded-xl bg-[var(--accent-terracotta)] px-6 py-3 text-sm sm:text-base font-bold text-white transition-all hover:bg-[var(--accent-terracotta-dark)] hover:scale-105 active:scale-95 shadow-lg shadow-orange-500/20 w-fit"
+              className="flex items-center gap-2 rounded-lg sm:rounded-xl bg-[var(--accent-terracotta)] px-3 sm:px-6 py-2 sm:py-3 text-[10px] sm:text-base font-bold text-white transition-all hover:bg-[var(--accent-terracotta-dark)] hover:scale-105 active:scale-95 shadow-lg shadow-orange-500/20 shrink-0"
             >
               <span>তহবিলসমূহ</span>
-              <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
+              <ArrowRight className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
             </button>
           </div>
           
-          <div className="-mx-4 sm:-mx-6 lg:-mx-8">
-            <div className="animate-infinite-scroll flex gap-6 py-4 hide-scrollbar">
+          <div className="-mx-4 sm:-mx-6 lg:-mx-8 overflow-x-auto hide-scrollbar cursor-grab active:cursor-grabbing">
+            <div className="animate-infinite-scroll flex gap-6 py-4 hover:[animation-play-state:paused] active:[animation-play-state:paused]">
               {(donations.length > 0 ? [...donations, ...donations] : []).map((fund, idx) => {
                 const title = fund.bn?.title || fund.en?.title || "";
                 const desc = fund.bn?.content || fund.en?.content || "";
                 const image = fund.image || "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=800&auto=format&fit=crop";
 
                 return (
-                  <div key={`${fund.id}-${idx}`} className="w-[75vw] sm:w-[400px] flex flex-col bg-white rounded-[1.5rem] sm:rounded-[2rem] border border-[var(--text-brown)]/5 shadow-xl overflow-hidden transition-all hover:shadow-2xl shrink-0">
-                    <div className="aspect-[16/10] w-full overflow-hidden">
+                  <div key={`${fund.id}-${idx}`} className="w-[280px] sm:w-[350px] flex flex-col bg-white rounded-2xl sm:rounded-3xl shadow-lg overflow-hidden transition-all hover:shadow-xl shrink-0">
+                    <div className="aspect-[16/9] w-full overflow-hidden">
                       <img 
                         src={image} 
                         alt={title} 
                         className="h-full w-full object-cover transition-transform duration-700 group-hover/card:scale-110"
                       />
                     </div>
-                    <div className="p-5 sm:p-8 flex flex-col flex-1 text-center">
-                      <h4 className="text-lg sm:text-2xl font-black text-[var(--text-brown-strong)] mb-2 sm:mb-4 leading-tight min-h-[3rem] sm:min-h-[4rem] flex items-center justify-center line-clamp-2">
+                    <div className="p-4 sm:p-6 flex flex-col flex-1 text-center">
+                      <h4 className="text-base sm:text-xl font-black text-[var(--text-brown-strong)] mb-2 leading-tight min-h-[2.5rem] sm:min-h-[3rem] flex items-center justify-center line-clamp-2">
                         {title}
                       </h4>
-                      <p className="text-xs sm:text-base text-[var(--text-brown)]/60 font-medium leading-relaxed mb-4 sm:mb-8 line-clamp-3">
-                        {desc.replace(/[#*`]/g, '')}
+                      <p className="text-[11px] sm:text-sm text-[var(--text-brown)]/60 font-medium leading-relaxed mb-4 line-clamp-2">
+                        {desc.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ').replace(/[#*`]/g, '')}
                       </p>
                       <div className="mt-auto">
                         <button 
                           onClick={() => navigate("/donation")}
-                          className="w-full rounded-xl sm:rounded-2xl bg-[var(--accent-terracotta)] py-3 sm:py-5 text-sm sm:text-lg font-bold text-white transition-all hover:bg-[var(--accent-terracotta-dark)] hover:shadow-2xl active:scale-95 shadow-xl shadow-orange-900/20"
+                          className="w-full rounded-xl bg-[var(--accent-terracotta)] py-2.5 sm:py-3.5 text-xs sm:text-base font-bold text-white transition-all hover:bg-[var(--accent-terracotta-dark)] hover:shadow-lg active:scale-95 shadow-lg shadow-orange-900/10"
                         >
                           অনুদান করুন
                         </button>
@@ -180,16 +181,24 @@ function JoinSection() {
         {/* Gallery Section (Media) - MOVED HERE BELOW DONATION */}
         <div className="mb-24 w-full">
           <div className="w-full">
-            <GallerySection />
-            <div className="mt-10 flex justify-center">
+            <div className="flex items-center justify-between mb-8 sm:mb-12 gap-4">
+              <div className="text-left">
+                <h2 className="text-xl sm:text-5xl font-black text-[var(--text-brown-strong)] mb-1 sm:mb-4">
+                  আমাদের চিত্রশালা
+                </h2>
+                <div className="h-1 w-12 sm:h-1.5 sm:w-24 bg-[var(--accent-terracotta)] rounded-full" />
+              </div>
               <button
                 onClick={() => navigate("/media")}
-                className="group flex items-center gap-4 rounded-2xl border-2 border-[var(--text-brown)] px-12 py-5 text-lg font-bold text-[var(--text-brown)] transition-all hover:bg-[var(--text-brown)] hover:text-white hover:scale-105 active:scale-95"
+                className="flex items-center gap-2 rounded-lg sm:rounded-xl border-2 border-[var(--text-brown)] px-3 sm:px-8 py-2 sm:py-4 text-[10px] sm:text-lg font-bold text-[var(--text-brown)] transition-all hover:bg-[var(--text-brown)] hover:text-white hover:scale-105 active:scale-95 shadow-lg shadow-black/5 shrink-0"
               >
-                <span>পুরো চিত্রশালা দেখুন</span>
-                <ImageIcon className="h-6 w-6 transition-transform group-hover:scale-110" />
+                <span className="hidden sm:inline">পুরো চিত্রশালা দেখুন</span>
+                <span className="sm:hidden">পুরো চিত্রশালা</span>
+                <ImageIcon className="h-3.5 w-3.5 sm:h-6 sm:w-6 transition-transform group-hover:scale-110" />
               </button>
             </div>
+            
+            <GallerySection />
           </div>
         </div>
 
@@ -204,36 +213,36 @@ function JoinSection() {
       </div>
 
       {/* Universal List View */}
-      <div className="grid gap-6 sm:grid-cols-2 mb-20">
+      <div className="flex flex-col gap-4 sm:grid sm:grid-cols-2 sm:gap-6 mb-20">
         {joinItems.map((item) => (
-          <div key={item.id} className="group flex flex-col bg-white rounded-[2.5rem] border border-[var(--text-brown)]/5 shadow-xl p-6 sm:p-8 transition-all hover:shadow-2xl hover:-translate-y-1">
-            <div className="mb-6">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--accent-terracotta)] text-white shadow-lg shadow-[var(--accent-terracotta)]/20 transition-transform group-hover:scale-110">
-                  <item.icon className="h-6 w-6" />
+          <div key={item.id} className="group flex flex-col bg-white rounded-2xl sm:rounded-[2.5rem] border border-[var(--text-brown)]/5 shadow-md sm:shadow-xl p-4 sm:p-8 transition-all hover:shadow-lg sm:hover:shadow-2xl sm:hover:-translate-y-1">
+            <div className="mb-4 sm:mb-6">
+              <div className="flex items-center gap-4 mb-3 sm:mb-4">
+                <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl sm:rounded-2xl bg-[var(--accent-terracotta)] text-white shadow-lg shadow-[var(--accent-terracotta)]/20 transition-transform group-hover:scale-110 shrink-0">
+                  <item.icon className="h-5 w-5 sm:h-6 sm:w-6" />
                 </div>
-                <h3 className="text-lg sm:text-xl font-black text-[var(--text-brown-strong)] tracking-tight">
+                <h3 className="text-base sm:text-xl font-black text-[var(--text-brown-strong)] tracking-tight">
                   {t(`join.${item.id}`, item.label)}
                 </h3>
               </div>
-              <p className="text-xs sm:text-sm text-[var(--text-brown)]/70 font-medium leading-relaxed">
+              <p className="text-[11px] sm:text-sm text-[var(--text-brown)]/70 font-medium leading-relaxed">
                 {t(`join.${item.id}_desc`, `Join our mission as a ${item.label.toLowerCase()} and help us make a lasting impact.`)}
               </p>
             </div>
             
-            <div className="mt-auto flex flex-col sm:flex-row gap-4">
+            <div className="mt-auto flex flex-row sm:flex-row gap-3 sm:gap-4">
               <button
                 onClick={() => navigate(`/join/form/${item.id}`)}
-                className="flex-1 flex items-center justify-center gap-3 rounded-2xl bg-[var(--accent-terracotta)] py-4 text-base sm:text-lg font-bold text-white shadow-xl shadow-[var(--accent-terracotta)]/20 transition-all hover:bg-[var(--accent-terracotta-dark)] hover:scale-[1.02] active:scale-95"
+                className="flex-1 flex items-center justify-center gap-2 sm:gap-3 rounded-xl sm:rounded-2xl bg-[var(--accent-terracotta)] py-3 sm:py-4 text-xs sm:text-lg font-bold text-white shadow-xl shadow-[var(--accent-terracotta)]/20 transition-all hover:bg-[var(--accent-terracotta-dark)] hover:scale-[1.02] active:scale-95"
               >
-                <Send className="h-5 w-5" />
+                <Send className="h-4 w-4 sm:h-5 sm:w-5" />
                 <span>{t("start_now", "শুরু করুন")}</span>
               </button>
               <button
                 onClick={() => navigate(`/join/list/${item.id}`)}
-                className="flex-1 flex items-center justify-center gap-3 rounded-2xl border-2 border-[var(--text-brown)]/10 bg-white py-4 text-base sm:text-lg font-bold text-[var(--text-brown)] transition-all hover:bg-[var(--text-brown)] hover:text-white hover:border-[var(--text-brown)] hover:scale-[1.02] active:scale-95"
+                className="flex-1 flex items-center justify-center gap-2 sm:gap-3 rounded-xl sm:rounded-2xl border-2 border-[var(--text-brown)]/10 bg-white py-3 sm:py-4 text-xs sm:text-lg font-bold text-[var(--text-brown)] transition-all hover:bg-[var(--text-brown)] hover:text-white hover:border-[var(--text-brown)] hover:scale-[1.02] active:scale-95"
               >
-                <ClipboardList className="h-5 w-5" />
+                <ClipboardList className="h-4 w-4 sm:h-5 sm:w-5" />
                 <span>{t("view_list", "লিস্ট দেখুন")}</span>
               </button>
             </div>

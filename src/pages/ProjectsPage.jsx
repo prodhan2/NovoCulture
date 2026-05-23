@@ -28,80 +28,141 @@ function ProjectsPage() {
   }, []);
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 bg-[var(--bg-cream)] min-h-screen">
-      <div className="mb-12 text-center">
-        <p className="text-xs font-black uppercase tracking-[0.25em] text-[var(--accent-terracotta)] mb-3">
-          {t("projects_label", "Projects")}
-        </p>
-        <h1 className="text-4xl sm:text-6xl font-black text-[var(--text-brown-strong)] tracking-tighter mb-4">
-          {t("projects_heading", "NovoCulture প্রজেক্ট আপডেট")}
-        </h1>
-        <div className="h-1.5 w-24 bg-[var(--accent-terracotta)] mx-auto rounded-full" />
+    <section className="w-full min-h-screen bg-white">
+      {/* Header - Full Width */}
+      <div className="w-full bg-white px-4 py-6 sm:px-8 lg:px-16 border-b-2 border-black">
+        <div className="w-full">
+          <div className="flex items-center gap-4 sm:gap-6">
+            <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-black text-white shadow-xl shadow-black/20 rotate-3 transition-all">
+              <Grid3X3 className="h-5 w-5 sm:h-6 sm:w-6" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.25em] text-black/40 mb-1">
+                {t("projects_label", "Projects")}
+              </p>
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-black tracking-tight leading-none mb-1">
+                {t("projects_heading", "NovoCulture প্রজেক্ট আপডেট")}
+              </h1>
+              <div className="h-1 w-12 sm:w-16 bg-black rounded-full" />
+            </div>
+          </div>
+        </div>
       </div>
 
-      {loading ? (
-        <div className="flex h-60 items-center justify-center">
-          <Loader2 className="h-10 w-10 animate-spin text-[var(--accent-terracotta)]" />
-        </div>
-      ) : projects.length === 0 ? (
-        <div className="rounded-[2.5rem] border-4 border-dashed border-[var(--text-brown)]/10 bg-white/50 p-20 text-center">
-          <AlertCircle className="mx-auto h-12 w-12 text-[var(--text-brown)]/20 mb-4" />
-          <p className="text-xl font-bold text-[var(--text-brown)]/40">
-            {t("no_content_available", "এই মুহূর্তে কোনো প্রজেক্ট পাওয়া যায়নি।")}
-          </p>
-        </div>
-      ) : (
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project) => {
-            const title = project.bn?.title || project.en?.title || "";
-            const content = project.bn?.content || project.en?.content || "";
-            
-            return (
-              <div key={project.id} className="group flex flex-col bg-white rounded-[2.5rem] border border-[var(--text-brown)]/5 shadow-xl overflow-hidden transition-all hover:shadow-2xl hover:-translate-y-1">
-                {/* Image */}
-                <div className="aspect-[16/10] overflow-hidden relative">
-                  {project.image ? (
-                    <img 
-                      src={project.image} 
-                      alt={title} 
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
-                  ) : (
-                    <div className="h-full w-full bg-[var(--bg-cream-soft)] flex items-center justify-center text-[var(--text-brown)]/10">
-                      <AlertCircle className="h-12 w-12" />
-                    </div>
-                  )}
-                  <div className="absolute top-4 left-4">
-                    <span className="bg-[var(--text-brown)]/60 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full border border-white/20 flex items-center gap-1.5 shadow-xl">
-                      <Calendar className="h-3 w-3" />
-                      {project.date ? new Date(project.date).toLocaleDateString(lang === "bn" ? "bn-BD" : "en-US", { month: "short", day: "numeric", year: "numeric" }) : ""}
-                    </span>
-                  </div>
-                </div>
+      {/* Content - Full Width & Compact List View */}
+      <div className="w-full px-4 sm:px-8 lg:px-16 py-6 sm:py-12">
+        {loading ? (
+          <div className="flex h-40 items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-black" />
+          </div>
+        ) : projects.length === 0 ? (
+          <div className="w-full rounded-3xl border-2 border-dashed border-black p-12 text-center">
+            <AlertCircle className="mx-auto h-12 w-12 text-black/10 mb-4" />
+            <p className="text-lg font-black text-black/40 tracking-tight">
+              {t("no_content_available", "এই মুহূর্তে কোনো প্রজেক্ট পাওয়া যায়নি।")}
+            </p>
+          </div>
+        ) : (
+          <div className="divide-y-2 divide-black/10">
+            {projects.map((project, index) => {
+              const title = project.bn?.title || project.en?.title || "";
+              const content = project.bn?.content || project.en?.content || "";
+              
+              return (
+                <div 
+                  key={project.id} 
+                  onClick={() => navigate(`/projects/${project.id}`)}
+                  className="group block py-6 sm:py-8 first:pt-0 last:pb-0 transition-all hover:bg-black/[0.02] cursor-pointer"
+                >
+                  <div className="flex gap-4 sm:gap-8 items-center">
+                    {/* Left Side: Image */}
+                    {project.image ? (
+                      <div className="h-24 w-24 sm:h-32 sm:w-48 rounded-2xl overflow-hidden shrink-0 relative">
+                        <img src={project.image} alt={title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                      </div>
+                    ) : (
+                      <div className="h-24 w-24 sm:h-32 sm:w-48 rounded-2xl bg-black/5 flex items-center justify-center shrink-0">
+                        <Grid3X3 className="h-8 w-8 text-black/10" />
+                      </div>
+                    )}
 
-                {/* Content */}
-                <div className="p-8 flex flex-col flex-1">
-                  <h3 className="text-2xl font-black text-[var(--text-brown-strong)] mb-4 leading-tight group-hover:text-[var(--accent-terracotta)] transition-colors">
-                    {title}
-                  </h3>
-                  <p className="text-base text-[var(--text-brown)]/60 font-medium leading-relaxed mb-8 line-clamp-3">
-                    {content.replace(/[#*`]/g, '')}
-                  </p>
-                  <div className="mt-auto">
-                    <button 
-                      onClick={() => navigate(`/projects/${project.id}`)}
-                      className="w-full rounded-2xl bg-[var(--accent-terracotta)]/5 border-2 border-[var(--accent-terracotta)]/20 py-4 text-base font-bold text-[var(--accent-terracotta)] transition-all hover:bg-[var(--accent-terracotta)] hover:text-white active:scale-95"
-                    >
-                      বিস্তারিত দেখুন
-                    </button>
+                    {/* Right Side: Others */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-3 mb-2">
+                            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-black text-white text-[10px] font-black shrink-0">
+                              {String(index + 1).padStart(2, '0')}
+                            </span>
+                            <span className="text-[10px] font-black text-black/40 uppercase tracking-widest">
+                              {project.date ? new Date(project.date).toLocaleDateString(lang === "bn" ? "bn-BD" : "en-US", { day: "numeric", month: "short", year: "numeric" }) : ""}
+                            </span>
+                          </div>
+                          
+                          <h2 className="text-lg sm:text-xl font-black text-black mb-1 leading-tight tracking-tight group-hover:text-black transition-colors truncate">
+                            {title}
+                          </h2>
+                          
+                          <p className="text-xs sm:text-sm text-black/60 font-bold leading-relaxed line-clamp-2">
+                            {content.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ').replace(/[#*`]/g, '')}
+                          </p>
+                        </div>
+                        
+                        <div className="hidden sm:flex h-10 w-10 items-center justify-center rounded-full border-2 border-black text-black group-hover:bg-black group-hover:text-white transition-all shrink-0">
+                          <ChevronRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+              );
+            })}
+          </div>
+        )}
+      </div>
     </section>
+  );
+}
+
+function Grid3X3(props) {
+  return (
+    <svg 
+      {...props}
+      xmlns="http://www.w3.org/2000/svg" 
+      width="24" 
+      height="24" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    >
+      <rect width="18" height="18" x="3" y="3" rx="2" />
+      <path d="M3 9h18" />
+      <path d="M3 15h18" />
+      <path d="M9 3v18" />
+      <path d="M15 3v18" />
+    </svg>
+  );
+}
+
+function ChevronRight(props) {
+  return (
+    <svg 
+      {...props}
+      xmlns="http://www.w3.org/2000/svg" 
+      width="24" 
+      height="24" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    >
+      <path d="m9 18 6-6-6-6"/>
+    </svg>
   );
 }
 

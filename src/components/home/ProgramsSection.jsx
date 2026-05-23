@@ -1,93 +1,97 @@
-const programs = [
-  {
-    title: "NovoCulture Skill Development Institute",
-    description: "Regular programs for skill growth and personal development.",
-  },
-  {
-    title: "Disaster Scholarship & Rehabilitation",
-    description: "Flood, cyclone, fire, and emergency humanitarian assistance.",
-  },
-  {
-    title: "Skill-based Entrepreneurship",
-    description:
-      "Creating opportunities for under-capitalized youth to start ventures.",
-  },
-  {
-    title: "Economic Empowerment",
-    description: "Income-generating support for working poor households.",
-  },
-  {
-    title: "Outreach Programs",
-    description: "Ongoing initiatives to spread knowledge and awareness.",
-  },
-  {
-    title: "Tree Planting",
-    description:
-      "Environment-friendly public welfare efforts to build a greener world.",
-  },
-];
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { getHeroUpdates } from "../../services/firestore";
+import { Grid3X3, ChevronRight, ChevronLeft, ArrowRight } from "lucide-react";
 
 function ProgramsSection() {
+  const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const lang = i18n.language.startsWith("bn") ? "bn" : "en";
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const all = await getHeroUpdates();
+        const filtered = all.filter(u => u.category === "projects");
+        setProjects(filtered);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
+
+  if (loading) return null;
+  if (projects.length === 0) return null;
+
   return (
-    <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-      <div className="mb-6 flex items-end justify-between gap-4">
+    <section className="mx-auto max-w-7xl px-4 py-12 sm:px-8 lg:px-16">
+      <div className="mb-10 flex items-end justify-between gap-4 border-b-2 border-black pb-6">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.25em] text-black">
+          <p className="text-[10px] font-black uppercase tracking-[0.25em] text-black/40 mb-1">
             Ongoing Programs
           </p>
-          <h2 className="mt-2 text-2xl font-black text-black sm:text-3xl">
-            Multiple activity cards with carousel-style navigation
+          <h2 className="text-2xl sm:text-4xl font-black text-black tracking-tight">
+            {t("projects_heading", "NovoCulture প্রজেক্ট আপডেট")}
           </h2>
         </div>
-        <div className="hidden gap-2 sm:flex">
-          <button
-            type="button"
-            className="h-10 w-10 rounded-full border-2 border-[var(--accent-terracotta)] bg-white text-black font-bold hover:bg-[var(--accent-terracotta)] hover:text-white transition-colors"
+        <div className="hidden gap-3 sm:flex">
+          <Link 
+            to="/projects"
+            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-black hover:opacity-70 transition-all mr-4"
           >
-            ←
-          </button>
-          <button
-            type="button"
-            className="h-10 w-10 rounded-full border-2 border-[var(--accent-terracotta)] bg-white text-black font-bold hover:bg-[var(--accent-terracotta)] hover:text-white transition-colors"
-          >
-            →
-          </button>
+            {t("view_all", "সবগুলো দেখুন")}
+            <ChevronRight className="h-4 w-4" />
+          </Link>
         </div>
       </div>
 
-      <div className="flex gap-4 overflow-x-auto pb-2">
-        {programs.map((program) => (
+      <div className="flex gap-6 overflow-x-auto pb-6 scrollbar-hide snap-x snap-mandatory">
+        {projects.map((project) => (
           <article
-            key={program.title}
-            className="min-w-[280px] flex-1 rounded-2xl border-2 border-[var(--accent-terracotta)] bg-white p-5 shadow-sm"
+            key={project.id}
+            onClick={() => navigate(`/projects/${project.id}`)}
+            className="min-w-[300px] sm:min-w-[380px] flex-1 rounded-3xl border-2 border-black bg-white p-6 shadow-sm transition-all hover:shadow-xl cursor-pointer snap-start group"
           >
-            <div className="h-40 rounded-xl border border-dashed border-[var(--accent-terracotta)]/30 bg-[var(--bg-cream)]" />
-            <p className="mt-4 text-xs font-bold uppercase tracking-[0.2em] text-black">
-              Regular Programs
-            </p>
-            <h3 className="mt-2 text-lg font-black text-black">
-              {program.title}
-            </h3>
-            <p className="mt-2 text-sm leading-7 text-black font-medium">
-              {program.description}
-            </p>
-            <button
-              type="button"
-              className="mt-5 inline-flex rounded-lg bg-[var(--accent-terracotta)] px-4 py-2.5 text-sm font-bold text-white border-2 border-[var(--accent-terracotta)] hover:bg-[var(--accent-terracotta-dark)] transition-colors"
-            >
-              View Details
-            </button>
+            <div className="aspect-video rounded-2xl border-2 border-black overflow-hidden mb-6 relative">
+              {project.image ? (
+                <img src={project.image} alt="" className="h-full w-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-500" />
+              ) : (
+                <div className="h-full w-full bg-black/5 flex items-center justify-center">
+                  <Grid3X3 className="h-10 w-10 text-black/10" />
+                </div>
+              )}
+              <div className="absolute top-4 left-4">
+                <span className="px-4 py-1.5 bg-black text-white text-[9px] font-black uppercase tracking-widest rounded-full border-2 border-white shadow-lg">
+                  {t("project_label", "Project")}
+                </span>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-xl font-black text-black leading-tight group-hover:text-black transition-colors line-clamp-2">
+                {project.bn?.title || project.en?.title}
+              </h3>
+              <p className="text-sm font-bold text-black/60 line-clamp-2 leading-relaxed">
+                {(project.bn?.content || project.en?.content || "").replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ').replace(/[#*`]/g, '')}
+              </p>
+              
+              <div className="pt-4 flex items-center justify-between border-t border-black/5">
+                <span className="text-[10px] font-black text-black/30 uppercase tracking-widest">
+                  {new Date(project.date).toLocaleDateString(lang === "bn" ? "bn-BD" : "en-US")}
+                </span>
+                <div className="h-10 w-10 rounded-full border-2 border-black flex items-center justify-center group-hover:bg-black group-hover:text-white transition-all">
+                  <ArrowRight className="h-5 w-5" />
+                </div>
+              </div>
+            </div>
           </article>
         ))}
-      </div>
-
-      <div className="mt-4 flex justify-end sm:hidden">
-        <button
-          type="button"
-          className="rounded-full border-2 border-[var(--accent-terracotta)] bg-white px-4 py-2 text-sm font-bold text-black"
-        >
-          Programs
-        </button>
       </div>
     </section>
   );

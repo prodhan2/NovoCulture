@@ -28,81 +28,136 @@ function DonationsListPage() {
   }, []);
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-      <div className="mb-12 text-center">
-        <p className="text-xs font-black uppercase tracking-[0.25em] text-[var(--accent-terracotta)] mb-3">
-          {t("donations_label", "Donation Funds")}
-        </p>
-        <h1 className="text-4xl sm:text-6xl font-black text-black tracking-tighter mb-4">
-          {t("donations_heading", "NovoCulture অনুদান")}
-        </h1>
-        <div className="h-1.5 w-24 bg-[var(--accent-terracotta)] mx-auto rounded-full" />
+    <section className="w-full min-h-screen bg-white">
+      {/* Header - Full Width */}
+      <div className="w-full bg-white px-4 py-6 sm:px-8 lg:px-16 border-b-2 border-black">
+        <div className="w-full">
+          <div className="flex items-center gap-4 sm:gap-6">
+            <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-black text-white shadow-xl shadow-black/20 rotate-3 transition-all">
+              <Heart className="h-5 w-5 sm:h-6 sm:w-6" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.25em] text-black/40 mb-1">
+                {t("donations_label", "Donation Funds")}
+              </p>
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-black tracking-tight leading-none mb-1">
+                {t("donations_heading", "NovoCulture অনুদান")}
+              </h1>
+              <div className="h-1 w-12 sm:w-16 bg-black rounded-full" />
+            </div>
+          </div>
+        </div>
       </div>
 
-      {loading ? (
-        <div className="flex h-60 items-center justify-center">
-          <Loader2 className="h-10 w-10 animate-spin text-[var(--accent-terracotta)]" />
-        </div>
-      ) : funds.length === 0 ? (
-        <div className="rounded-[2.5rem] border-4 border-dashed border-black/5 bg-white/50 p-20 text-center">
-          <AlertCircle className="mx-auto h-12 w-12 text-black/20 mb-4" />
-          <p className="text-xl font-bold text-black/40">
-            {t("no_funds_available", "এই মুহূর্তে কোনো অনুদান তহবিল পাওয়া যায়নি।")}
-          </p>
-        </div>
-      ) : (
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {funds.map((fund) => {
-            const title = fund.bn?.title || fund.en?.title || "";
-            const content = fund.bn?.content || fund.en?.content || "";
-            
-            return (
-              <div key={fund.id} className="group flex flex-col bg-white rounded-[2.5rem] border border-black/5 shadow-xl overflow-hidden transition-all hover:shadow-2xl hover:-translate-y-1">
-                {/* Image */}
-                <div className="aspect-[16/10] overflow-hidden relative">
-                  {fund.image ? (
-                    <img 
-                      src={fund.image} 
-                      alt={title} 
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
-                  ) : (
-                    <div className="h-full w-full bg-[var(--bg-cream-soft)] flex items-center justify-center text-black/10">
-                      <Heart className="h-12 w-12" />
-                    </div>
-                  )}
-                </div>
+      {/* Content - Full Width & Compact List View */}
+      <div className="w-full px-4 sm:px-8 lg:px-16 py-6 sm:py-12">
+        {loading ? (
+          <div className="flex h-40 items-center justify-center">
+            <Loader2 className="h-8 w-8 animate-spin text-black" />
+          </div>
+        ) : funds.length === 0 ? (
+          <div className="w-full rounded-3xl border-2 border-dashed border-black p-12 text-center">
+            <AlertCircle className="mx-auto h-12 w-12 text-black/10 mb-4" />
+            <p className="text-lg font-black text-black/40 tracking-tight">
+              {t("no_funds_available", "এই মুহূর্তে কোনো অনুদান তহবিল পাওয়া যায়নি।")}
+            </p>
+          </div>
+        ) : (
+          <div className="divide-y-2 divide-black/10">
+            {funds.map((fund, index) => {
+              const title = fund.bn?.title || fund.en?.title || "";
+              const content = fund.bn?.content || fund.en?.content || "";
+              
+              return (
+                <div 
+                  key={fund.id} 
+                  className="group block py-6 sm:py-8 first:pt-0 last:pb-0 transition-all hover:bg-black/[0.02]"
+                >
+                  <div className="flex gap-4 sm:gap-8 items-center">
+                    {/* Left Side: Image */}
+                    {fund.image ? (
+                      <div 
+                        onClick={() => navigate(`/projects/${fund.id}`)}
+                        className="h-24 w-24 sm:h-32 sm:w-48 rounded-2xl overflow-hidden border-2 border-black shrink-0 relative cursor-pointer"
+                      >
+                        <img src={fund.image} alt={title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                      </div>
+                    ) : (
+                      <div 
+                        onClick={() => navigate(`/projects/${fund.id}`)}
+                        className="h-24 w-24 sm:h-32 sm:w-48 rounded-2xl bg-black/5 flex items-center justify-center border-2 border-black shrink-0 cursor-pointer"
+                      >
+                        <Heart className="h-8 w-8 text-black/10" />
+                      </div>
+                    )}
 
-                {/* Content */}
-                <div className="p-8 flex flex-col flex-1 text-center">
-                  <h3 className="text-2xl font-black text-black mb-4 leading-tight group-hover:text-[var(--accent-terracotta)] transition-colors min-h-[4rem] flex items-center justify-center">
-                    {title}
-                  </h3>
-                  <p className="text-base text-black/60 font-medium leading-relaxed mb-8 line-clamp-4">
-                    {content.replace(/[#*`]/g, '')}
-                  </p>
-                  <div className="mt-auto flex flex-col gap-3">
-                    <button 
-                      onClick={() => navigate(`/projects/${fund.id}`)}
-                      className="w-full rounded-2xl bg-[var(--accent-terracotta)]/5 border-2 border-[var(--accent-terracotta)]/20 py-4 text-base font-bold text-[var(--accent-terracotta)] transition-all hover:bg-[var(--accent-terracotta)] hover:text-white active:scale-95"
-                    >
-                      বিস্তারিত দেখুন
-                    </button>
-                    <button 
-                      onClick={() => navigate("/donation")}
-                      className="w-full rounded-2xl bg-[var(--accent-terracotta)] py-4 text-base font-bold text-white shadow-xl shadow-orange-900/20 transition-all hover:bg-[var(--accent-terracotta-dark)] active:scale-95"
-                    >
-                      অনুদান করুন
-                    </button>
+                    {/* Right Side: Others */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-4">
+                        <div 
+                          className="flex-1 min-w-0 cursor-pointer"
+                          onClick={() => navigate(`/projects/${fund.id}`)}
+                        >
+                          <div className="flex items-center gap-3 mb-2">
+                            <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-black text-white text-[10px] font-black shrink-0">
+                              {String(index + 1).padStart(2, '0')}
+                            </span>
+                            <span className="text-[10px] font-black text-black/40 uppercase tracking-widest">DONATION FUND</span>
+                          </div>
+                          
+                          <h2 className="text-lg sm:text-xl font-black text-black mb-1 leading-tight tracking-tight group-hover:text-black transition-colors truncate">
+                            {title}
+                          </h2>
+                          
+                          <p className="text-xs sm:text-sm text-black/60 font-bold leading-relaxed line-clamp-2">
+                            {content.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ').replace(/[#*`]/g, '')}
+                          </p>
+                        </div>
+                        
+                        <div className="flex flex-col gap-2 shrink-0">
+                          <button 
+                            onClick={() => navigate("/donation")}
+                            className="hidden sm:block px-4 py-2 rounded-xl bg-black text-white text-[10px] font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg"
+                          >
+                            অনুদান দিন
+                          </button>
+                          <div 
+                            onClick={() => navigate(`/projects/${fund.id}`)}
+                            className="hidden sm:flex h-10 w-10 items-center justify-center rounded-full border-2 border-black text-black group-hover:bg-black group-hover:text-white transition-all self-end cursor-pointer"
+                          >
+                            <ChevronRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+              );
+            })}
+          </div>
+        )}
+      </div>
     </section>
   );
 }
 
-export default DonationsListPage;
+function ChevronRight(props) {
+  return (
+    <svg 
+      {...props}
+      xmlns="http://www.w3.org/2000/svg" 
+      width="24" 
+      height="24" 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    >
+      <path d="m9 18 6-6-6-6"/>
+    </svg>
+  );
+ }
+ 
+ export default DonationsListPage;

@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { auth, googleProvider } from "../services/firebase";
 import { signInWithPopup } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { getUserProfile, setUserProfile, getSettings, addContactMessage } from "../services/firestore";
+import { getUserProfile, setUserProfile, getSettings, addContactMessage, syncUserWithFirestore } from "../services/firestore";
 import { Mail, Phone, MapPin, Clock, Send, Loader2, LogIn, CheckCircle2, User, ArrowRight, MessageSquare, AlertCircle } from "lucide-react";
 import PhoneVerificationModal from "../components/common/PhoneVerificationModal.jsx";
 
@@ -43,17 +43,10 @@ export default function ContactPage() {
       const result = await signInWithPopup(auth, googleProvider);
       const loggedUser = result.user;
       
-      const existingProfile = await getUserProfile(loggedUser.uid);
-      if (!existingProfile) {
-        const newProfile = {
-          displayName: loggedUser.displayName || "",
-          photoURL: loggedUser.photoURL || "",
-          email: loggedUser.email || ""
-        };
-        await setUserProfile(loggedUser.uid, newProfile);
-        setProfile(newProfile);
-      } else {
-        setProfile(existingProfile);
+      // Centralized sync with Firestore
+      const syncedProfile = await syncUserWithFirestore(loggedUser);
+      if (syncedProfile) {
+        setProfile(syncedProfile);
       }
     } catch (error) {
       console.error("Login failed:", error);

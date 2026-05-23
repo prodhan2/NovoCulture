@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { getAboutContent, addAboutSection, updateAboutSection, deleteAboutSection, getAllUsers } from "../../services/firestore";
-import { Plus, Trash2, Edit2, Check, X, MoveUp, MoveDown, Loader2, AlertCircle, User, Briefcase, Info, Eye, EyeOff } from "lucide-react";
+import { Plus, Trash2, Edit2, Check, X, MoveUp, MoveDown, Loader2, AlertCircle, User, Briefcase, Info, Eye, EyeOff, Layout } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Shimmer from "../common/Shimmer";
 import ReactMarkdown from "react-markdown";
@@ -112,7 +112,7 @@ export default function AboutAdmin() {
     try {
       const payload = { ...editData };
       if (editData.type === "section") {
-        payload.en = { title: editData.bn.title, content: editData.bn.content };
+        payload.en = { title: editData.bn?.title || "", content: editData.bn?.content || "" };
       }
       await updateAboutSection(editingId, payload);
       setEditingId(null);
@@ -160,24 +160,47 @@ export default function AboutAdmin() {
     }
   }
 
+  const adjustHeight = (e) => {
+    const target = e.target || e;
+    target.style.height = 'auto';
+    target.style.height = target.scrollHeight + 'px';
+  };
+
+  useEffect(() => {
+    if (!loading) {
+      setTimeout(() => {
+        const textareas = document.querySelectorAll('textarea');
+        textareas.forEach(adjustHeight);
+      }, 100);
+    }
+  }, [loading, contentType, editingId, newSection, newMember]);
+
   return (
-    <div className="space-y-8">
-      {/* Add New Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <h2 className="text-xl font-black text-[var(--text-brown-strong)]">আমাদের সম্পর্কে - কন্টেন্ট ম্যানেজমেন্ট</h2>
-        <div className="flex gap-2 p-1 bg-white rounded-xl border-2 border-[var(--text-brown)]/5">
+    <div className="w-full animate-in fade-in duration-700">
+      {/* Compact Header Area */}
+      <div className="px-4 sm:px-8 lg:px-10 py-6 border-b-2 border-[var(--accent-terracotta)]/10 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div>
+          <h1 className="text-2xl font-black text-black uppercase tracking-tight">
+            আমাদের সম্পর্কে
+          </h1>
+          <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest mt-1">
+            প্রতিষ্ঠানের তথ্য এবং টিম মেম্বার ম্যানেজ করুন
+          </p>
+        </div>
+        
+        <div className="flex gap-2 p-1.5 bg-[var(--accent-terracotta)] rounded-xl border-2 border-[var(--accent-terracotta)]">
           <button
             onClick={() => setContentType("section")}
-            className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
-              contentType === "section" ? "bg-[var(--text-brown)] text-white shadow-md" : "text-[var(--text-brown)] hover:bg-[var(--text-brown)]/5"
+            className={`flex items-center gap-2 px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
+              contentType === "section" ? "bg-white text-[var(--accent-terracotta)] shadow-md scale-105" : "text-white hover:bg-white/10"
             }`}
           >
             সাধারণ সেকশন
           </button>
           <button
             onClick={() => setContentType("team")}
-            className={`flex items-center gap-2 px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
-              contentType === "team" ? "bg-[var(--text-brown)] text-white shadow-md" : "text-[var(--text-brown)] hover:bg-[var(--text-brown)]/5"
+            className={`flex items-center gap-2 px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
+              contentType === "team" ? "bg-white text-[var(--accent-terracotta)] shadow-md scale-105" : "text-white hover:bg-white/10"
             }`}
           >
             টিম মেম্বার
@@ -185,242 +208,287 @@ export default function AboutAdmin() {
         </div>
       </div>
 
-      <div className="rounded-[2rem] bg-white border-2 border-[var(--text-brown)]/5 p-6 sm:p-8 shadow-sm">
-        <h3 className="text-sm font-black text-[var(--text-brown-strong)] mb-6 flex items-center gap-2 uppercase tracking-widest">
-          {contentType === "section" ? "নতুন কন্টেন্ট যোগ করুন" : "নতুন টিম মেম্বার যোগ করুন"}
-        </h3>
-
-        {contentType === "section" ? (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <label className="block text-xs font-bold uppercase tracking-wider text-[var(--text-brown)]/40">সাধারণ সেকশন (About)</label>
-              <button 
-                onClick={() => setShowPreview(!showPreview)}
-                className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[var(--accent-terracotta)] hover:opacity-70 transition-opacity"
-              >
-                {showPreview ? <><EyeOff className="h-3 w-3" /> Hide Preview</> : <><Eye className="h-3 w-3" /> Show Preview</>}
-              </button>
-            </div>
-            
-            <input
-              type="text"
-              placeholder="শিরোনাম (বাংলা)"
-              value={newSection.bn.title}
-              onChange={e => setNewUpdate({...newSection, bn: {...newSection.bn, title: e.target.value}})}
-              className="w-full rounded-xl border-2 border-white bg-[var(--bg-cream-soft)] px-4 py-3 text-sm outline-none focus:border-[var(--accent-terracotta)] text-black font-bold"
-            />
-            
-            <div className="grid gap-4 grid-cols-1">
-              {!showPreview ? (
-                <textarea
-                  placeholder="বিষয়বস্তু (বাংলা) - Markdown কোড ব্যবহার করতে পারেন (যেমন: **bold**, *italic*, - list)"
-                  value={newSection.bn.content}
-                  onChange={e => setNewUpdate({...newSection, bn: {...newSection.bn, content: e.target.value}})}
-                  rows={6}
-                  className="w-full rounded-xl border-2 border-white bg-[var(--bg-cream-soft)] px-4 py-3 text-sm outline-none focus:border-[var(--accent-terracotta)] text-black font-medium"
-                />
-              ) : (
-                <div className="w-full rounded-xl border-2 border-dashed border-[var(--accent-terracotta)]/20 bg-white p-6 min-h-[150px]">
-                  <div className="prose prose-sm prose-stone max-w-none prose-p:text-black/70">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                      {newSection.bn.content || "*Preview content will appear here...*"}
-                    </ReactMarkdown>
-                  </div>
+      <div className="px-4 sm:px-8 lg:px-10 pb-20 w-full space-y-16">
+        {/* Form Section */}
+        <div className="space-y-10">
+          {contentType === "section" ? (
+            <div className="space-y-10">
+              <div className="grid grid-cols-1 md:grid-cols-4 items-start gap-4 md:gap-12 group">
+                <label className="text-base sm:text-lg font-black text-black uppercase tracking-tight md:pt-2">
+                  শিরোনাম
+                </label>
+                <div className="md:col-span-3">
+                  <textarea
+                    rows={1}
+                    onInput={adjustHeight}
+                    placeholder="শিরোনাম (বাংলা)"
+                    value={newSection.bn?.title || ""}
+                    onChange={e => setNewUpdate({...newSection, bn: {...newSection.bn, title: e.target.value}})}
+                    className="w-full rounded-xl border-2 border-[var(--accent-terracotta)] bg-white px-5 py-3 text-lg font-bold focus:ring-4 focus:ring-[var(--accent-terracotta)]/10 outline-none transition-all text-black resize-none placeholder:text-black/10 shadow-sm min-h-[52px]"
+                  />
                 </div>
-              )}
-            </div>
-          </div>
-        ) : (
-          <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
-            <div className="space-y-4">
-              <label className="block text-xs font-bold uppercase tracking-wider text-black/60">মেম্বার নির্বাচন করুন</label>
-              <div className="relative">
-                <select
-                  value={newMember.userId}
-                  onChange={(e) => setNewMember({...newMember, userId: e.target.value})}
-                  className="w-full rounded-xl border-2 border-white bg-[var(--bg-cream-soft)] px-4 py-3 text-sm outline-none focus:border-[var(--accent-terracotta)] text-black font-bold appearance-none"
-                >
-                  <option value="">মেম্বার সিলেক্ট করুন...</option>
-                  {users.map(u => (
-                    <option key={u.id} value={u.id}>{u.displayName} ({u.email})</option>
-                  ))}
-                </select>
-                <User className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-black/40 pointer-events-none" />
               </div>
 
-              <label className="block text-xs font-bold uppercase tracking-wider text-black/60">পদবী (Position)</label>
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="যেমন: ফাউন্ডার, ভলান্টিয়ার"
-                  value={newMember.position}
-                  onChange={(e) => setNewMember({...newMember, position: e.target.value})}
-                  className="w-full rounded-xl border-2 border-white bg-[var(--bg-cream-soft)] pl-10 pr-4 py-3 text-sm outline-none focus:border-[var(--accent-terracotta)] text-black font-bold"
-                />
-                <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-black/40" />
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <label className="block text-xs font-bold uppercase tracking-wider text-black/60">অতিরিক্ত তথ্য (Info)</label>
-              <div className="relative">
-                <textarea
-                  placeholder="মেম্বার সম্পর্কে কিছু লিখুন..."
-                  value={newMember.info}
-                  onChange={(e) => setNewMember({...newMember, info: e.target.value})}
-                  rows={5}
-                  className="w-full rounded-xl border-2 border-white bg-[var(--bg-cream-soft)] pl-10 pr-4 py-3 text-sm outline-none focus:border-[var(--accent-terracotta)] text-black"
-                />
-                <Info className="absolute left-3 top-4 h-4 w-4 text-black/40" />
-              </div>
-            </div>
-          </div>
-        )}
-
-        <button
-          onClick={handleAdd}
-          disabled={saving}
-          className="mt-6 flex items-center justify-center gap-2 rounded-xl bg-black px-8 py-3 text-sm font-bold text-white transition btn-swap hover:bg-black/80 disabled:opacity-50 w-full sm:w-auto"
-        >
-          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-          <span>{contentType === "section" ? "সেকশন যোগ করুন" : "মেম্বার যোগ করুন"}</span>
-        </button>
-      </div>
-
-      {/* Existing Sections List */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-bold text-black">সেকশনসমূহ ম্যানেজ করুন</h2>
-        {loading ? (
-          <div className="space-y-4">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="p-6 rounded-2xl border-2 border-[var(--accent-terracotta)]/10 bg-white space-y-3">
-                <div className="flex gap-2">
-                  <Shimmer width="100px" height="1.5rem" />
-                  <Shimmer width="60px" height="1.25rem" borderRadius="1rem" />
+              <div className="grid grid-cols-1 md:grid-cols-4 items-start gap-4 md:gap-12 group">
+                <div className="space-y-2">
+                  <label className="text-base sm:text-lg font-black text-black uppercase tracking-tight md:pt-2">
+                    বিস্তারিত
+                  </label>
+                  <button 
+                    onClick={() => setShowPreview(!showPreview)}
+                    className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-[var(--accent-terracotta)] hover:opacity-70 transition-opacity px-1"
+                  >
+                    {showPreview ? <><EyeOff className="h-3 w-3" /> কোড</> : <><Eye className="h-3 w-3" /> প্রিভিউ</>}
+                  </button>
                 </div>
-                <Shimmer width="90%" height="1.25rem" />
-                <Shimmer width="100%" height="1.25rem" />
-              </div>
-            ))}
-          </div>
-        ) : items.length === 0 ? (
-          <div className="rounded-3xl border-2 border-dashed border-[var(--accent-terracotta)]/20 p-12 text-center">
-            <AlertCircle className="mx-auto h-8 w-8 text-black" />
-            <p className="mt-2 text-sm font-bold text-black">কোনো সেকশন পাওয়া যায়নি। উপরে নতুন সেকশন যোগ করুন!</p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {items.map((item, idx) => (
-              <div key={item.id} className="group rounded-2xl border-2 border-[var(--accent-terracotta)] bg-white p-6 shadow-sm transition hover:shadow-md">
-                {editingId === item.id ? (
-                  <div className="space-y-6">
-                    {item.type === "team" ? (
-                      <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
-                        <div className="space-y-4">
-                          <input
-                            type="text"
-                            value={editData.position}
-                            onChange={e => setEditData({...editData, position: e.target.value})}
-                            placeholder="পদবী"
-                            className="w-full rounded-lg border-2 border-white bg-[var(--bg-cream-soft)] px-4 py-2 text-sm outline-none focus:border-[var(--accent-terracotta)] text-black font-bold"
-                          />
-                        </div>
-                        <div className="space-y-4">
-                          <textarea
-                            value={editData.info}
-                            onChange={e => setEditData({...editData, info: e.target.value})}
-                            placeholder="অতিরিক্ত তথ্য"
-                            rows={3}
-                            className="w-full rounded-lg border-2 border-white bg-[var(--bg-cream-soft)] px-4 py-2 text-sm outline-none focus:border-[var(--accent-terracotta)] text-black"
-                          />
-                        </div>
+                <div className="md:col-span-3">
+                  {!showPreview ? (
+                    <textarea
+                      placeholder="বিষয়বস্তু (বাংলা) - Markdown ব্যবহার করতে পারেন..."
+                      value={newSection.bn?.content || ""}
+                      onInput={adjustHeight}
+                      onChange={e => setNewUpdate({...newSection, bn: {...newSection.bn, content: e.target.value}})}
+                      rows={4}
+                      className="w-full rounded-xl border-2 border-[var(--accent-terracotta)] bg-white px-5 py-3 text-base font-bold focus:ring-4 focus:ring-[var(--accent-terracotta)]/10 outline-none transition-all text-black resize-none placeholder:text-black/10 shadow-sm min-h-[160px]"
+                    />
+                  ) : (
+                    <div className="w-full rounded-xl border-2 border-dashed border-[var(--accent-terracotta)] bg-black/5 p-8 min-h-[160px]">
+                      <div className="prose prose-sm prose-stone max-w-none text-black font-bold">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {newSection.bn?.content || "*প্রিভিউ কন্টেন্ট এখানে দেখা যাবে...*"}
+                        </ReactMarkdown>
                       </div>
-                    ) : (
-                      <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
-                        <div className="space-y-4">
-                          <input
-                            type="text"
-                            value={editData.bn.title}
-                            onChange={e => setEditData({...editData, bn: {...editData.bn, title: e.target.value}})}
-                            className="w-full rounded-lg border-2 border-white bg-[var(--bg-cream-soft)] px-4 py-2 text-sm outline-none focus:border-[var(--accent-terracotta)] text-black font-bold"
-                          />
-                          <textarea
-                            value={editData.bn.content}
-                            onChange={e => setEditData({...editData, bn: {...editData.bn, content: e.target.value}})}
-                            rows={4}
-                            className="w-full rounded-lg border-2 border-white bg-[var(--bg-cream-soft)] px-4 py-2 text-sm outline-none focus:border-[var(--accent-terracotta)] text-black"
-                          />
-                        </div>
-                        {/* Hidden English Edit but sync on save if needed */}
-                      </div>
-                    )}
-                    <div className="flex justify-end gap-2">
-                      <button onClick={() => {setEditingId(null); setEditData(null);}} className="p-2 text-black hover:bg-black/5 rounded-lg"><X className="h-5 w-5" /></button>
-                      <button onClick={handleSaveEdit} disabled={saving} className="rounded-lg bg-black px-4 py-2 text-sm font-bold text-white transition btn-swap hover:bg-black/80 disabled:opacity-50">
-                        {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
-                        <span>সেভ করুন</span>
-                      </button>
                     </div>
-                  </div>
-                ) : (
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 min-w-0">
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-10">
+              <div className="grid grid-cols-1 md:grid-cols-4 items-center gap-4 md:gap-12 group">
+                <label className="text-base sm:text-lg font-black text-black uppercase tracking-tight">
+                  মেম্বার
+                </label>
+                <div className="md:col-span-3">
+                  <select
+                    value={newMember.userId}
+                    onChange={(e) => setNewMember({...newMember, userId: e.target.value})}
+                    className="w-full rounded-xl border-2 border-[var(--accent-terracotta)] bg-white px-5 py-3 text-base font-bold outline-none focus:ring-4 focus:ring-[var(--accent-terracotta)]/10 text-black appearance-none"
+                  >
+                    <option value="">মেম্বার সিলেক্ট করুন...</option>
+                    {users.map(u => (
+                      <option key={u.id} value={u.id}>{u.displayName} ({u.email})</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-4 items-start gap-4 md:gap-12 group">
+                <label className="text-base sm:text-lg font-black text-black uppercase tracking-tight md:pt-2">
+                  পদবী
+                </label>
+                <div className="md:col-span-3">
+                  <textarea
+                    rows={1}
+                    onInput={adjustHeight}
+                    placeholder="যেমন: ফাউন্ডার, ভলান্টিয়ার"
+                    value={newMember.position}
+                    onChange={(e) => setNewMember({...newMember, position: e.target.value})}
+                    className="w-full rounded-xl border-2 border-[var(--accent-terracotta)] bg-white px-5 py-3 text-base font-bold focus:ring-4 focus:ring-[var(--accent-terracotta)]/10 outline-none transition-all text-black resize-none placeholder:text-black/10 shadow-sm min-h-[52px]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-4 items-start gap-4 md:gap-12 group">
+                <label className="text-base sm:text-lg font-black text-black uppercase tracking-tight md:pt-2">
+                  অতিরিক্ত তথ্য
+                </label>
+                <div className="md:col-span-3">
+                  <textarea
+                    placeholder="মেম্বার সম্পর্কে কিছু লিখুন..."
+                    value={newMember.info}
+                    onInput={adjustHeight}
+                    onChange={(e) => setNewMember({...newMember, info: e.target.value})}
+                    rows={3}
+                    className="w-full rounded-xl border-2 border-[var(--accent-terracotta)] bg-white px-5 py-3 text-base font-bold focus:ring-4 focus:ring-[var(--accent-terracotta)]/10 outline-none transition-all text-black resize-none placeholder:text-black/10 shadow-sm min-h-[100px]"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="flex justify-start md:ml-[25%]">
+            <button
+              onClick={handleAdd}
+              disabled={saving}
+              className="flex items-center justify-center gap-3 rounded-xl bg-[var(--accent-terracotta)] px-12 py-4 text-base font-black text-white shadow-xl shadow-[var(--accent-terracotta)]/20 transition hover:opacity-90 active:scale-95 disabled:opacity-30 uppercase tracking-widest border-2 border-[var(--accent-terracotta)]"
+            >
+              {saving ? <Loader2 className="h-5 w-5 animate-spin" /> : <Plus className="h-5 w-5" />}
+              <span>{contentType === "section" ? "সেকশন যোগ করুন" : "মেম্বার যোগ করুন"}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Existing Content List */}
+        <div className="mt-24 pt-16 border-t-2 border-black/5 space-y-12">
+          <div className="flex items-center gap-4">
+            <Layout className="h-6 w-6 text-[var(--accent-terracotta)]" />
+            <h2 className="text-2xl font-black text-black uppercase tracking-tight">বিদ্যমান সেকশনসমূহ</h2>
+          </div>
+
+          {loading ? (
+            <div className="grid gap-6">
+              {[1, 2].map(i => <div key={i} className="h-32 rounded-3xl bg-white border-2 border-black/5 animate-pulse" />)}
+            </div>
+          ) : items.length === 0 ? (
+            <div className="rounded-[3rem] border-4 border-dashed border-black/5 p-20 text-center bg-white/50">
+              <AlertCircle className="mx-auto h-12 w-12 text-black/10 mb-4" />
+              <p className="text-lg font-black text-black/20 uppercase tracking-widest">কোনো সেকশন পাওয়া যায়নি</p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {items.map((item, idx) => (
+                <div key={item.id} className="group relative rounded-3xl border-2 border-black/5 bg-white p-8 transition-all hover:border-[var(--accent-terracotta)] hover:shadow-2xl">
+                  {editingId === item.id ? (
+                    <div className="space-y-8 animate-in fade-in duration-300">
                       {item.type === "team" ? (
-                        <div className="flex items-center gap-4">
-                          <div className="h-16 w-16 rounded-full border-2 border-[var(--accent-terracotta)] overflow-hidden bg-[var(--bg-cream)] shrink-0">
-                            {item.userPhoto ? (
-                              <img src={item.userPhoto} alt={item.userName} className="h-full w-full object-cover" />
-                            ) : (
-                              <div className="h-full w-full flex items-center justify-center text-black">
-                                <User className="h-8 w-8" />
-                              </div>
-                            )}
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-2 mb-1">
-                              <h3 className="text-lg font-bold text-black">{item.userName}</h3>
-                              <span className="px-2 py-0.5 rounded-full bg-black text-white text-[10px] font-bold uppercase tracking-wider">TEAM</span>
+                        <div className="space-y-8">
+                          <div className="grid grid-cols-1 md:grid-cols-4 items-start gap-4 md:gap-12 group">
+                            <label className="text-base font-black text-black uppercase tracking-tight md:pt-2">পদবী</label>
+                            <div className="md:col-span-3">
+                              <textarea
+                                rows={1}
+                                onInput={adjustHeight}
+                                value={editData.position || ""}
+                                onChange={e => setEditData({...editData, position: e.target.value})}
+                                className="w-full rounded-xl border-2 border-[var(--accent-terracotta)] bg-white px-5 py-3 text-base font-bold outline-none focus:ring-4 focus:ring-[var(--accent-terracotta)]/10 text-black resize-none min-h-[52px]"
+                              />
                             </div>
-                            <p className="text-sm font-bold text-[var(--accent-terracotta)] mb-1">{item.position}</p>
-                            <p className="text-xs text-black/60 line-clamp-1">{item.info}</p>
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-4 items-start gap-4 md:gap-12 group">
+                            <label className="text-base font-black text-black uppercase tracking-tight md:pt-2">তথ্য</label>
+                            <div className="md:col-span-3">
+                              <textarea
+                                rows={3}
+                                onInput={adjustHeight}
+                                value={editData.info || ""}
+                                onChange={e => setEditData({...editData, info: e.target.value})}
+                                className="w-full rounded-xl border-2 border-[var(--accent-terracotta)] bg-white px-5 py-3 text-base font-bold outline-none focus:ring-4 focus:ring-[var(--accent-terracotta)]/10 text-black resize-none min-h-[100px]"
+                              />
+                            </div>
                           </div>
                         </div>
                       ) : (
-                        <>
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="text-lg font-bold text-black">{item.bn.title || item.en.title}</h3>
-                            <span className="px-2 py-0.5 rounded-full bg-[var(--bg-cream-soft)] border border-black/10 text-black text-[10px] font-bold uppercase tracking-wider">ABOUT</span>
+                        <div className="space-y-8">
+                          <div className="grid grid-cols-1 md:grid-cols-4 items-start gap-4 md:gap-12 group">
+                            <label className="text-base font-black text-black uppercase tracking-tight md:pt-2">শিরোনাম</label>
+                            <div className="md:col-span-3">
+                              <textarea
+                                rows={1}
+                                onInput={adjustHeight}
+                                value={editData.bn?.title || ""}
+                                onChange={e => setEditData({...editData, bn: {...editData.bn, title: e.target.value}})}
+                                className="w-full rounded-xl border-2 border-[var(--accent-terracotta)] bg-white px-5 py-3 text-base font-bold outline-none focus:ring-4 focus:ring-[var(--accent-terracotta)]/10 text-black resize-none min-h-[52px]"
+                              />
+                            </div>
                           </div>
-                          <p className="text-sm text-black line-clamp-2 leading-relaxed">{item.bn.content || item.en.content}</p>
-                        </>
+                          <div className="grid grid-cols-1 md:grid-cols-4 items-start gap-4 md:gap-12 group">
+                            <label className="text-base font-black text-black uppercase tracking-tight md:pt-2">বিস্তারিত</label>
+                            <div className="md:col-span-3">
+                              <textarea
+                                rows={4}
+                                onInput={adjustHeight}
+                                value={editData.bn?.content || ""}
+                                onChange={e => setEditData({...editData, bn: {...editData.bn, content: e.target.value}})}
+                                className="w-full rounded-xl border-2 border-[var(--accent-terracotta)] bg-white px-5 py-3 text-base font-bold outline-none focus:ring-4 focus:ring-[var(--accent-terracotta)]/10 text-black resize-none min-h-[160px]"
+                              />
+                            </div>
+                          </div>
+                        </div>
                       )}
-                      <div className="mt-4 flex items-center gap-2">
-                        <button
-                          onClick={() => handleMove(item.id, -1)}
-                          disabled={idx === 0 || saving}
-                          className="p-1.5 rounded-lg border-2 border-white hover:bg-black/5 disabled:opacity-30"
-                        >
-                          <MoveUp className="h-3.5 w-3.5" />
-                        </button>
-                        <button
-                          onClick={() => handleMove(item.id, 1)}
-                          disabled={idx === items.length - 1 || saving}
-                          className="p-1.5 rounded-lg border-2 border-white hover:bg-black/5 disabled:opacity-30"
-                        >
-                          <MoveDown className="h-3.5 w-3.5" />
+                      <div className="flex justify-end gap-3 md:ml-[25%]">
+                        <button onClick={() => {setEditingId(null); setEditData(null);}} className="px-8 py-3 rounded-xl border-2 border-[var(--accent-terracotta)] font-black text-xs uppercase tracking-widest hover:bg-[var(--accent-terracotta)] hover:text-white transition-all">বাতিল</button>
+                        <button onClick={handleSaveEdit} disabled={saving} className="rounded-xl bg-[var(--accent-terracotta)] px-10 py-3 text-sm font-black text-white transition hover:opacity-90 active:scale-95 disabled:opacity-30 uppercase tracking-widest border-2 border-[var(--accent-terracotta)]">
+                          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                          <span>সেভ করুন</span>
                         </button>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 self-start opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button onClick={() => handleEdit(item)} className="p-2 text-black hover:bg-black/5 rounded-lg"><Edit2 className="h-5 w-5" /></button>
-                      <button onClick={() => handleDelete(item.id)} className="p-2 text-black hover:bg-black/5 rounded-lg"><Trash2 className="h-5 w-5" /></button>
+                  ) : (
+                    <div className="flex flex-col sm:flex-row items-center gap-8">
+                      {/* Serial Indicator */}
+                      <div className="hidden md:flex h-8 w-8 rounded-full bg-[var(--accent-terracotta)] text-white items-center justify-center text-[10px] font-black shrink-0 border-2 border-[var(--accent-terracotta)]">
+                        {idx + 1}
+                      </div>
+
+                      <div className="flex-1 min-w-0 w-full">
+                        {item.type === "team" ? (
+                          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+                            <div className="h-20 w-20 rounded-full border-2 border-[var(--accent-terracotta)] overflow-hidden bg-black/5 shrink-0 shadow-lg">
+                              {item.userPhoto ? (
+                                <img src={item.userPhoto} alt={item.userName} className="h-full w-full object-cover" />
+                              ) : (
+                                <div className="h-full w-full flex items-center justify-center text-black/20">
+                                  <User className="h-10 w-10" />
+                                </div>
+                              )}
+                            </div>
+                            <div className="text-center sm:text-left space-y-1">
+                              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                                <h3 className="text-xl font-black text-black leading-tight">{item.userName}</h3>
+                                <span className="px-2 py-0.5 rounded bg-[var(--accent-terracotta)] text-white text-[7px] font-black uppercase tracking-widest">TEAM</span>
+                              </div>
+                              <p className="text-sm font-black text-black opacity-40">{item.position}</p>
+                              <p className="text-xs font-bold text-black/60 leading-relaxed max-w-xl line-clamp-2">{item.info}</p>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-3">
+                              <h3 className="text-xl font-black text-black leading-tight">{(item.bn?.title || item.en?.title) || "শিরোনাম নেই"}</h3>
+                              <span className="px-2 py-0.5 rounded bg-[var(--accent-terracotta)] text-white text-[7px] font-black uppercase tracking-widest">SECTION</span>
+                            </div>
+                            <div className="text-xs font-bold text-black/60 leading-relaxed line-clamp-2">
+                              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                {(item.bn?.content || item.en?.content) || ""}
+                              </ReactMarkdown>
+                            </div>
+                          </div>
+                        )}
+                        
+                        <div className="mt-6 flex items-center gap-2">
+                          <button
+                            onClick={() => handleMove(item.id, -1)}
+                            disabled={idx === 0 || saving}
+                            className="p-2.5 rounded-xl border-2 border-black/10 hover:border-[var(--accent-terracotta)] hover:bg-[var(--accent-terracotta)] hover:text-white disabled:opacity-20 transition-all active:scale-90"
+                          >
+                            <MoveUp className="h-3 w-3" />
+                          </button>
+                          <button
+                            onClick={() => handleMove(item.id, 1)}
+                            disabled={idx === items.length - 1 || saving}
+                            className="p-2.5 rounded-xl border-2 border-black/10 hover:border-[var(--accent-terracotta)] hover:bg-[var(--accent-terracotta)] hover:text-white disabled:opacity-20 transition-all active:scale-90"
+                          >
+                            <MoveDown className="h-3 w-3" />
+                          </button>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                        <button onClick={() => handleEdit(item)} className="p-3 rounded-xl border-2 border-[var(--accent-terracotta)] text-[var(--accent-terracotta)] transition hover:bg-[var(--accent-terracotta)] hover:text-white active:scale-95 shadow-sm">
+                          <Edit2 className="h-4 w-4" />
+                        </button>
+                        <button onClick={() => handleDelete(item.id)} className="p-3 rounded-xl border-2 border-red-500 text-red-500 transition hover:bg-red-500 hover:text-white active:scale-95 shadow-sm">
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

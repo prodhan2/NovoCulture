@@ -36,7 +36,7 @@ function Layout() {
     <div className="min-h-screen bg-[var(--bg-cream)] text-[var(--text-brown)]">
       <Header isSidebarHidden={isSidebarHidden} toggleSidebar={toggleSidebar} />
       <div className={`transition-all duration-300 ${isSidebarHidden ? "lg:pl-0" : "lg:pl-[280px]"}`}>
-        <main className="min-h-screen">
+        <main className="min-h-screen w-full overflow-x-hidden">
           <Outlet />
         </main>
         <Footer />

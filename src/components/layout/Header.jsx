@@ -7,7 +7,7 @@ import { getSettings } from "../../services/firestore";
 import { auth, googleProvider } from "../../services/firebase";
 import { signInWithPopup, signOut } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { getUserProfile, setUserProfile } from "../../services/firestore";
+import { getUserProfile, setUserProfile, syncUserWithFirestore } from "../../services/firestore";
 import PhoneVerificationModal from "../common/PhoneVerificationModal.jsx";
 
 function Header({ isSidebarHidden, toggleSidebar }) {
@@ -50,18 +50,8 @@ function Header({ isSidebarHidden, toggleSidebar }) {
         const result = await signInWithPopup(auth, googleProvider);
         const loggedUser = result.user;
         
-        // Initialize profile in Firestore on first login
-        const existingProfile = await getUserProfile(loggedUser.uid);
-        if (!existingProfile) {
-          await setUserProfile(loggedUser.uid, {
-            displayName: loggedUser.displayName || "",
-            photoURL: loggedUser.photoURL || "",
-            email: loggedUser.email || ""
-          });
-        } else if (!existingProfile.photoURL && loggedUser.photoURL) {
-          // Update photo if missing in Firestore but available in Auth
-          await setUserProfile(loggedUser.uid, { photoURL: loggedUser.photoURL });
-        }
+        // Centralized sync with Firestore
+        await syncUserWithFirestore(loggedUser);
         
         navigate("/profile");
       } catch (error) {

@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, CheckCircle2, Heart, Loader2, LogIn, Mail, User, Phone } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Heart, Loader2, LogIn, Mail, User, Phone, AlertCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { auth, googleProvider } from "../services/firebase";
 import { signInWithPopup } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { addDonation, getUserProfile, setUserProfile } from "../services/firestore";
+import { addDonation, getUserProfile, setUserProfile, getCustomForms, syncUserWithFirestore } from "../services/firestore";
 
 export default function DonationPage() {
   const { t } = useTranslation();
@@ -28,14 +28,8 @@ export default function DonationPage() {
       const result = await signInWithPopup(auth, googleProvider);
       const loggedUser = result.user;
       
-      const existingProfile = await getUserProfile(loggedUser.uid);
-      if (!existingProfile) {
-        await setUserProfile(loggedUser.uid, {
-          displayName: loggedUser.displayName || "",
-          photoURL: loggedUser.photoURL || "",
-          email: loggedUser.email || ""
-        });
-      }
+      // Centralized sync with Firestore
+      await syncUserWithFirestore(loggedUser);
     } catch (error) {
       console.error("Login failed:", error);
       let errorMessage = "লগইন করতে সমস্যা হয়েছে।";
@@ -50,6 +44,8 @@ export default function DonationPage() {
 
   async function handleSubmit(event) {
     event.preventDefault();
+    console.log("Submit clicked", { fund, phone, amount, user: user?.uid });
+
     if (!user) {
       setStatus({ type: "error", text: "অনুদান দিতে দয়া করে লগইন করুন।" });
       return;
@@ -60,27 +56,38 @@ export default function DonationPage() {
       return;
     }
 
+    const numAmount = Number(amount);
+    if (isNaN(numAmount) || numAmount <= 0) {
+      setStatus({ type: "error", text: "অনুগ্রহ করে সঠিক টাকার পরিমাণ লিখুন।" });
+      return;
+    }
+
     setLoading(true);
     setStatus({ type: "", text: "" });
 
     try {
-      await addDonation({
+      const donationData = {
         uid: user.uid,
-        userName: user.displayName,
+        userName: user.displayName || user.email || "Anonymous",
         userEmail: user.email,
         fund,
         phone,
-        amount: Number(amount),
-        status: "Pending" // Initial status
-      });
+        amount: numAmount,
+        status: "Pending",
+        date: new Date().toISOString()
+      };
+      
+      console.log("Sending donation data:", donationData);
+      const docId = await addDonation(donationData);
+      console.log("Donation successful, docId:", docId);
       
       setStatus({ type: "success", text: "আপনার অনুদান সফলভাবে গ্রহণ করা হয়েছে। জাযাকাল্লাহু খাইরান!" });
       setFund("");
       setPhone("");
       setAmount("");
     } catch (err) {
-      console.error(err);
-      setStatus({ type: "error", text: "অনুদান প্রক্রিয়াকরণে সমস্যা হয়েছে। আবার চেষ্টা করুন।" });
+      console.error("Donation submission error:", err);
+      setStatus({ type: "error", text: `অনুদান প্রক্রিয়াকরণে সমস্যা হয়েছে: ${err.message || "আবার চেষ্টা করুন।"}` });
     } finally {
       setLoading(false);
     }

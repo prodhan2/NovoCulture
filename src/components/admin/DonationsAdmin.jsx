@@ -41,111 +41,116 @@ export default function DonationsAdmin() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-black text-white">
-            <Heart className="h-6 w-6" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-black">অনুদানের রেকর্ডসমূহ</h2>
-            <p className="text-xs font-bold text-black/60">সকল ব্যবহারকারীর অনুদানের তালিকা ম্যানেজ করুন</p>
-          </div>
+    <div className="w-full animate-in fade-in duration-700">
+      {/* Compact Header Area */}
+      <div className="px-4 sm:px-8 lg:px-10 py-6 border-b-2 border-[var(--accent-terracotta)]/10 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div>
+          <h1 className="text-2xl font-black text-black uppercase tracking-tight">
+            অনুদানের রেকর্ডসমূহ
+          </h1>
+          <p className="text-[10px] font-bold text-black/40 uppercase tracking-widest mt-1">
+            সকল ব্যবহারকারীর অনুদানের তালিকা ম্যানেজ করুন
+          </p>
         </div>
+        
         <button
           onClick={load}
-          className="flex items-center gap-2 rounded-xl border-2 border-white bg-white px-6 py-2.5 text-sm font-bold text-black transition hover:bg-black/5"
+          className="flex items-center gap-2 rounded-xl bg-[var(--accent-terracotta)] px-6 py-3 text-[10px] font-black uppercase tracking-widest text-white transition-all hover:opacity-90 border-2 border-[var(--accent-terracotta)]"
         >
           রিফ্রেশ করুন
         </button>
       </div>
 
-      {loading ? (
-        <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
-          {[1, 2, 3, 4].map(i => <CardShimmer key={i} />)}
-        </div>
-      ) : items.length > 0 ? (
-        <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
-          {items.map((item) => (
-            <div key={item.id} className="rounded-2xl border-2 border-white bg-white/50 p-6 shadow-sm transition hover:shadow-md backdrop-blur-sm">
-              <div className="flex justify-between items-start mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center text-[var(--accent-terracotta)] border-2 border-white shadow-sm">
-                    <Heart className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-black text-lg">৳{item.amount}</h3>
-                    <span className="text-xs font-bold text-black/40 uppercase tracking-widest">{item.fund}</span>
-                  </div>
-                </div>
-                <div className="text-[10px] font-bold text-black flex items-center gap-1.5 bg-white/80 px-3 py-1 rounded-full border-2 border-white shadow-sm">
-                  <Calendar className="h-3 w-3" />
-                  {new Date(item.date).toLocaleString("bn-BD")}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm text-black font-medium">
-                    <User className="h-4 w-4 shrink-0 text-black/40" />
-                    <span className="truncate">{item.userName}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-black font-medium">
-                    <Mail className="h-4 w-4 shrink-0 text-black/40" />
-                    <span className="truncate">{item.userEmail}</span>
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm text-black font-medium">
-                    <Phone className="h-4 w-4 shrink-0 text-black/40" />
-                    <span>{item.phone}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm font-bold">
-                    {item.status === "Success" ? (
-                      <CheckCircle2 className="h-4 w-4 text-green-500" />
-                    ) : item.status === "Pending" ? (
-                      <Clock className="h-4 w-4 text-yellow-500" />
-                    ) : (
-                      <XCircle className="h-4 w-4 text-red-500" />
-                    )}
-                    <span className={
-                      item.status === "Success" ? "text-green-600" : 
-                      item.status === "Pending" ? "text-yellow-600" : "text-red-600"
-                    }>
-                      {item.status === "Success" ? "সফল" : 
-                       item.status === "Pending" ? "অপেক্ষমান" : "ব্যর্থ"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 pt-4 border-t-2 border-white">
-                <button
-                  onClick={() => handleStatusChange(item.id, "Success")}
-                  disabled={updating === item.id || item.status === "Success"}
-                  className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-green-50 px-3 py-2.5 text-xs font-bold text-green-600 transition hover:bg-green-100 disabled:opacity-30 border-2 border-white shadow-sm"
-                >
-                  {updating === item.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
-                  সফল মার্ক করুন
-                </button>
-                <button
-                  onClick={() => handleStatusChange(item.id, "Failed")}
-                  disabled={updating === item.id || item.status === "Failed"}
-                  className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-red-50 px-3 py-2.5 text-xs font-bold text-red-600 transition hover:bg-red-100 disabled:opacity-30 border-2 border-white shadow-sm"
-                >
-                  {updating === item.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <XCircle className="h-3.5 w-3.5" />}
-                  ব্যর্থ মার্ক করুন
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="rounded-3xl border-2 border-white p-20 text-center bg-white/30 backdrop-blur-sm">
-          <AlertCircle className="mx-auto h-12 w-12 text-black/20" />
-          <p className="mt-4 text-lg font-bold text-black/40">এখনো কোনো অনুদান পাওয়া যায়নি।</p>
-        </div>
-      )}
+      <div className="px-4 sm:px-8 lg:px-10 pb-20">
+        {loading ? (
+          <div className="grid gap-6">
+            {[1, 2, 3].map(i => <div key={i} className="h-20 rounded-2xl bg-white border-2 border-black/5 animate-pulse" />)}
+          </div>
+        ) : items.length > 0 ? (
+          <div className="overflow-x-auto rounded-3xl border-2 border-black/5 bg-white shadow-sm">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-[var(--accent-terracotta)]/5">
+                  <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-[var(--accent-terracotta)]/60">নং</th>
+                  <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-[var(--accent-terracotta)]/60">দাতা</th>
+                  <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-[var(--accent-terracotta)]/60">তহবিল ও পরিমাণ</th>
+                  <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-[var(--accent-terracotta)]/60">যোগাযোগ</th>
+                  <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-[var(--accent-terracotta)]/60">তারিখ</th>
+                  <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-[var(--accent-terracotta)]/60">অবস্থা</th>
+                  <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-[var(--accent-terracotta)]/60">অ্যাকশন</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y-2 divide-black/5">
+                {items.map((item, index) => (
+                  <tr key={item.id} className="hover:bg-[var(--accent-terracotta)]/[0.02] transition-colors group">
+                    <td className="px-6 py-5">
+                      <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-[var(--accent-terracotta)]/10 text-[var(--accent-terracotta)]/60 font-black text-[10px] border border-[var(--accent-terracotta)]/10">
+                        {index + 1}
+                      </div>
+                    </td>
+                    <td className="px-6 py-5">
+                      <div className="flex flex-col">
+                        <span className="text-sm font-black text-black">{item.userName}</span>
+                        <span className="text-[8px] font-bold text-black/30 uppercase tracking-tighter truncate max-w-[120px]">{item.userEmail}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-5">
+                      <div className="flex flex-col">
+                        <span className="text-sm font-black text-black">৳{item.amount}</span>
+                        <span className="text-[8px] font-black text-[var(--accent-terracotta)] uppercase tracking-widest">{item.fund}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-5 text-xs font-bold text-black/60">
+                      {item.phone}
+                    </td>
+                    <td className="px-6 py-5">
+                      <div className="flex items-center gap-1.5 text-[10px] font-black text-black/20 uppercase tracking-widest">
+                        <Calendar className="h-3 w-3" />
+                        {new Date(item.date).toLocaleDateString("bn-BD")}
+                      </div>
+                    </td>
+                    <td className="px-6 py-5">
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border ${
+                        item.status === "Success" ? "bg-green-50 border-green-200 text-green-700" :
+                        item.status === "Failed" ? "bg-red-50 border-red-200 text-red-700" :
+                        "bg-orange-50 border-orange-200 text-orange-700"
+                      }`}>
+                        {item.status === "Success" ? <CheckCircle2 className="h-3 w-3" /> : 
+                         item.status === "Failed" ? <XCircle className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
+                        {item.status === "Success" ? "সফল" : 
+                         item.status === "Failed" ? "ব্যর্থ" : "অপেক্ষমান"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-5">
+                      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={() => handleStatusChange(item.id, "Success")}
+                          disabled={updating === item.id || item.status === "Success"}
+                          className="p-2 rounded-lg bg-green-50 text-green-600 hover:bg-green-500 hover:text-white disabled:opacity-20 transition-all border border-green-100"
+                        >
+                          {updating === item.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <CheckCircle2 className="h-3 w-3" />}
+                        </button>
+                        <button
+                          onClick={() => handleStatusChange(item.id, "Failed")}
+                          disabled={updating === item.id || item.status === "Failed"}
+                          className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-500 hover:text-white disabled:opacity-20 transition-all border border-red-100"
+                        >
+                          {updating === item.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <XCircle className="h-3 w-3" />}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="rounded-[3rem] border-4 border-dashed border-black/5 p-20 text-center bg-white/50">
+            <AlertCircle className="mx-auto h-12 w-12 text-black/10 mb-4" />
+            <p className="text-lg font-black text-black/20 uppercase tracking-widest">এখনো কোনো অনুদান পাওয়া যায়নি</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

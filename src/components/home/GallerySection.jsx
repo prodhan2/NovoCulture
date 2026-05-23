@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { getMedia, getMediaCategories } from "../../services/firestore";
-import { Filter, X, Maximize2 } from "lucide-react";
+import { Filter, X, Maximize2, ChevronLeft, ChevronRight } from "lucide-react";
 
 function GallerySection() {
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -31,7 +31,7 @@ function GallerySection() {
   }, []);
 
   useEffect(() => {
-    if (selectedImage) {
+    if (selectedIndex !== null) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "unset";
@@ -39,19 +39,33 @@ function GallerySection() {
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [selectedImage]);
+  }, [selectedIndex]);
 
   useEffect(() => {
     const handleEsc = (e) => {
-      if (e.key === "Escape") setSelectedImage(null);
+      if (e.key === "Escape") setSelectedIndex(null);
+      if (e.key === "ArrowLeft") prevImage();
+      if (e.key === "ArrowRight") nextImage();
     };
     window.addEventListener("keydown", handleEsc);
     return () => window.removeEventListener("keydown", handleEsc);
-  }, []);
+  }, [selectedIndex, items, selectedCategory]);
 
   const filteredItems = selectedCategory === "All" 
     ? items 
     : items.filter(item => item.category === selectedCategory);
+
+  const nextImage = (e) => {
+    if (e) e.stopPropagation();
+    if (selectedIndex === null) return;
+    setSelectedIndex((prev) => (prev + 1) % filteredItems.length);
+  };
+
+  const prevImage = (e) => {
+    if (e) e.stopPropagation();
+    if (selectedIndex === null) return;
+    setSelectedIndex((prev) => (prev - 1 + filteredItems.length) % filteredItems.length);
+  };
 
   if (items.length === 0 && !loading) {
     return (
@@ -101,7 +115,7 @@ function GallerySection() {
           {filteredItems.map((m, idx) => (
             <div
               key={m.id || idx}
-              onClick={() => setSelectedImage(m.url || m.image)}
+              onClick={() => setSelectedIndex(idx)}
               className="group aspect-square overflow-hidden rounded-lg sm:rounded-3xl border border-[var(--text-brown)]/5 sm:border-2 bg-white shadow-sm transition-all hover:scale-[1.03] hover:shadow-xl relative cursor-zoom-in"
             >
               <img
@@ -128,29 +142,49 @@ function GallerySection() {
       )}
 
       {/* Lightbox Modal */}
-      {selectedImage && (
+      {selectedIndex !== null && (
         <div 
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 p-4 sm:p-10 animate-in fade-in duration-300 backdrop-blur-sm"
-          onClick={() => setSelectedImage(null)}
+          onClick={() => setSelectedIndex(null)}
         >
           <button 
             className="fixed top-6 right-6 z-[110] text-white hover:text-[var(--accent-terracotta)] transition-all p-3 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-md border border-white/20 active:scale-90"
             onClick={(e) => {
               e.stopPropagation();
-              setSelectedImage(null);
+              setSelectedIndex(null);
             }}
           >
             <X className="h-6 w-6 sm:h-8 sm:w-8" />
           </button>
+
+          {/* Navigation Buttons */}
+          <button
+            onClick={prevImage}
+            className="fixed left-4 top-1/2 -translate-y-1/2 z-[110] text-white p-4 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-md border border-white/10 transition-all active:scale-90"
+          >
+            <ChevronLeft className="h-8 w-8" />
+          </button>
+          <button
+            onClick={nextImage}
+            className="fixed right-4 top-1/2 -translate-y-1/2 z-[110] text-white p-4 bg-white/10 hover:bg-white/20 rounded-full backdrop-blur-md border border-white/10 transition-all active:scale-90"
+          >
+            <ChevronRight className="h-8 w-8" />
+          </button>
+
           <div 
             className="relative max-w-5xl w-full h-full flex items-center justify-center pointer-events-none"
           >
             <img 
-              src={selectedImage} 
+              src={filteredItems[selectedIndex].url || filteredItems[selectedIndex].image} 
               alt="Zoomed" 
               className="max-h-full max-w-full object-contain rounded-lg shadow-2xl animate-in zoom-in-95 duration-300 pointer-events-auto" 
               onClick={(e) => e.stopPropagation()}
             />
+          </div>
+
+          {/* Image Counter */}
+          <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[110] text-white/60 text-sm font-bold bg-black/40 px-4 py-2 rounded-full backdrop-blur-md border border-white/10">
+            {selectedIndex + 1} / {filteredItems.length}
           </div>
         </div>
       )}
