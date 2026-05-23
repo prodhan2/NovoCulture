@@ -100,24 +100,35 @@ export default function UsersAdmin() {
           </div>
 
           {isSuperAdmin && (
-            <button
-              onClick={(e) => handleRoleChange(selectedUser, selectedUser.role === 'coadmin' ? 'user' : 'coadmin', e)}
-              disabled={updating}
-              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all ${
-                 selectedUser.role === 'coadmin' || selectedUser.superadmin
-                   ? "bg-rose-600 text-white hover:bg-rose-700" 
-                   : "bg-indigo-600 text-white hover:bg-indigo-700"
-               } disabled:opacity-50 disabled:cursor-not-allowed shadow-md`}
-             >
-              {updating ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : selectedUser.role === 'coadmin' || selectedUser.superadmin ? (
-                <ShieldAlert className="h-4 w-4" />
-              ) : (
-                <ShieldCheck className="h-4 w-4" />
-              )}
-              {selectedUser.role === 'coadmin' || selectedUser.superadmin ? "অ্যাডমিন রোল সরান" : "কো-অ্যাডমিন বানান"}
-            </button>
+            <div className="flex items-center gap-3">
+              {/* Toggle Superadmin Button */}
+              <button
+                onClick={(e) => handleRoleChange(selectedUser, (selectedUser.role === 'superadmin' || selectedUser.superadmin) ? 'user' : 'superadmin', e)}
+                disabled={updating}
+                className={`flex items-center gap-2 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all ${
+                  (selectedUser.role === 'superadmin' || selectedUser.superadmin)
+                    ? "bg-rose-600 text-white hover:bg-rose-700" 
+                    : "bg-white text-rose-600 border-2 border-rose-600 hover:bg-rose-50"
+                } disabled:opacity-50 disabled:cursor-not-allowed shadow-md`}
+              >
+                {updating ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
+                {(selectedUser.role === 'superadmin' || selectedUser.superadmin) ? "সুপারঅ্যাডমিন সরান" : "সুপারঅ্যাডমিন বানান"}
+              </button>
+
+              {/* Toggle Coadmin Button */}
+              <button
+                onClick={(e) => handleRoleChange(selectedUser, selectedUser.role === 'coadmin' ? 'user' : 'coadmin', e)}
+                disabled={updating || selectedUser.role === 'superadmin' || selectedUser.superadmin}
+                className={`flex items-center gap-2 px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all ${
+                  selectedUser.role === 'coadmin'
+                    ? "bg-indigo-600 text-white hover:bg-indigo-700" 
+                    : "bg-white text-indigo-600 border-2 border-indigo-600 hover:bg-indigo-50"
+                } disabled:opacity-50 disabled:cursor-not-allowed shadow-md`}
+              >
+                {updating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Shield className="h-4 w-4" />}
+                {selectedUser.role === 'coadmin' ? "কো-অ্যাডমিন সরান" : "কো-অ্যাডমিন বানান"}
+              </button>
+            </div>
           )}
         </div>
 
@@ -283,25 +294,42 @@ export default function UsersAdmin() {
                        {user.role === 'coadmin' && <Shield className="h-3 w-3 text-indigo-600 shrink-0" />}
                      </div>
                      <p className="text-[10px] font-bold text-black/30 truncate">{user.email}</p>
-                   </div>
- 
-                   {/* Quick Toggle Button - Only for Superadmin */}
-                   {isSuperAdmin && (
-                     <button
-                       onClick={(e) => handleRoleChange(user, user.role === 'coadmin' ? 'user' : 'coadmin', e)}
-                       disabled={updating || user.role === 'superadmin' || user.superadmin}
-                       className={`p-2.5 rounded-xl border-2 transition-all ${
-                         user.role === 'coadmin' 
-                           ? "border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white" 
-                           : "border-indigo-600/20 text-indigo-600 hover:bg-indigo-600 hover:text-white"
-                       } disabled:opacity-30 disabled:cursor-not-allowed`}
-                       title={user.role === 'coadmin' ? "অ্যাডমিন রোল সরান" : "কো-অ্যাডমিন বানান"}
-                     >
-                      {user.role === 'coadmin' ? <ShieldAlert className="h-4 w-4" /> : <ShieldCheck className="h-4 w-4" />}
-                    </button>
+                  </div>
+
+                  {/* Quick Toggle Buttons - Only for Superadmin */}
+                  {isSuperAdmin && (
+                    <div className="flex items-center gap-2">
+                      {/* Superadmin Toggle */}
+                      <button
+                        onClick={(e) => handleRoleChange(user, (user.role === 'superadmin' || user.superadmin) ? 'user' : 'superadmin', e)}
+                        disabled={updating}
+                        className={`p-2 rounded-lg border-2 transition-all ${
+                          (user.role === 'superadmin' || user.superadmin)
+                            ? "bg-rose-600 text-white border-rose-600" 
+                            : "border-rose-600/20 text-rose-600 hover:bg-rose-600 hover:text-white"
+                        } disabled:opacity-30`}
+                        title={(user.role === 'superadmin' || user.superadmin) ? "সুপারঅ্যাডমিন সরান" : "সুপারঅ্যাডমিন বানান"}
+                      >
+                        <ShieldCheck className="h-3.5 w-3.5" />
+                      </button>
+
+                      {/* Coadmin Toggle */}
+                      <button
+                        onClick={(e) => handleRoleChange(user, user.role === 'coadmin' ? 'user' : 'coadmin', e)}
+                        disabled={updating || user.role === 'superadmin' || user.superadmin}
+                        className={`p-2 rounded-lg border-2 transition-all ${
+                          user.role === 'coadmin' 
+                            ? "bg-indigo-600 text-white border-indigo-600" 
+                            : "border-indigo-600/20 text-indigo-600 hover:bg-indigo-600 hover:text-white"
+                        } disabled:opacity-30 disabled:cursor-not-allowed`}
+                        title={user.role === 'coadmin' ? "কো-অ্যাডমিন সরান" : "কো-অ্যাডমিন বানান"}
+                      >
+                        <Shield className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
                   )}
 
-                <div className="p-2 rounded-lg bg-black/5 text-black/20 group-hover:bg-[var(--accent-terracotta)] group-hover:text-white transition-all">
+                  <div className="p-2 rounded-lg bg-black/5 text-black/20 group-hover:bg-[var(--accent-terracotta)] group-hover:text-white transition-all">
                   <ArrowLeft className="h-3 w-3 rotate-180" />
                 </div>
               </div>
