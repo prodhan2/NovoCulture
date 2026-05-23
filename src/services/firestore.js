@@ -222,6 +222,7 @@ export async function syncUserWithFirestore(user) {
       // First time login
       userData.joinedAt = new Date().toISOString();
       userData.role = "user";
+      userData.superadmin = false;
       await setUserProfile(user.uid, userData);
       return { ...userData, isNewUser: true };
     } else {
@@ -251,6 +252,13 @@ export async function getAllUsers() {
     console.error("Error fetching all users:", error);
     return [];
   }
+}
+
+export async function toggleUserSuperadmin(uid, currentStatus) {
+  if (!db) throw new Error("Firestore not initialized");
+  const userRef = doc(db, "users", uid);
+  await setDoc(userRef, { superadmin: !currentStatus }, { merge: true });
+  return !currentStatus;
 }
 
 // Contact Messages

@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams, useNavigate } from "react-router-dom";
+import { auth } from "../services/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { getUserProfile } from "../services/firestore";
 import MediaAdmin from "../components/admin/MediaAdmin";
 import ContactAdmin from "../components/admin/ContactAdmin";
 import SettingsAdmin from "../components/admin/SettingsAdmin";
@@ -16,7 +19,37 @@ export default function AdminPage() {
   const { t, i18n } = useTranslation();
   const { tab: activeTab } = useParams();
   const navigate = useNavigate();
+  const [user, loading] = useAuthState(auth);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [checking, setChecking] = useState(true);
   const [tab, setTab] = useState(activeTab || "media");
+
+  useEffect(() => {
+    async function checkAdmin() {
+      if (loading) return;
+      
+      if (!user) {
+        navigate("/");
+        return;
+      }
+
+      try {
+        const profile = await getUserProfile(user.uid);
+        if (profile?.superadmin) {
+          setIsAdmin(true);
+        } else {
+          navigate("/");
+        }
+      } catch (error) {
+        console.error("Error checking admin status:", error);
+        navigate("/");
+      } finally {
+        setChecking(false);
+      }
+    }
+
+    checkAdmin();
+  }, [user, loading, navigate]);
 
   useEffect(() => {
     // Force Bengali for admin panel
@@ -35,6 +68,16 @@ export default function AdminPage() {
     setTab(newTab);
     navigate(`/admin/${newTab}`);
   };
+
+  if (loading || checking) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[var(--bg-cream)]">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[var(--accent-terracotta)] border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  if (!isAdmin) return null;
 
   return (
     <section className="w-full bg-[var(--bg-cream)] min-h-screen">

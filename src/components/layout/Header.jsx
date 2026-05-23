@@ -98,8 +98,12 @@ function Header({ isSidebarHidden, toggleSidebar }) {
     { label: t("nav.contact"), to: "/contact", icon: Phone },
     { label: t("nav.funds", "তহবিলসমূহ"), to: "/funds", icon: Grid3X3 },
     { label: t("nav.donate", "অনুদান"), to: "/donation", icon: Heart },
-    { label: t("nav.admin", "Admin"), to: "/admin", icon: ShieldCheck },
   ];
+
+  // Add Admin if user is superadmin
+  if (profile?.superadmin) {
+    navigation.push({ label: t("nav.admin", "Admin"), to: "/admin", icon: ShieldCheck });
+  }
 
   // Language toggle
   const toggleLanguage = useCallback(() => {
