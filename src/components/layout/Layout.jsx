@@ -3,7 +3,6 @@ import { Outlet } from "react-router-dom";
 import Header from "./Header.jsx";
 import Footer from "./Footer.jsx";
 import MobileBottomNav from "./MobileBottomNav.jsx";
-import ExitIntentModal from "../common/ExitIntentModal.jsx";
 
 function Layout() {
   const [isSidebarHidden, setIsSidebarHidden] = useState(() => {
@@ -42,7 +41,6 @@ function Layout() {
         <Footer />
       </div>
       <MobileBottomNav />
-      <ExitIntentModal />
     </div>
   );
 }

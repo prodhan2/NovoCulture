@@ -53,7 +53,7 @@ function SectionPage({ title }) {
           <p className="text-[10px] font-black uppercase tracking-[0.25em] text-black/40 mb-2">
             {t("nav.about")}
           </p>
-          <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black text-black mb-12 tracking-tighter leading-none">
+          <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black text-black mb-12 tracking-tighter leading-none break-words">
             NovoCulture
           </h1>
           <div className="h-2 w-16 sm:w-32 bg-black rounded-full mb-20" />
@@ -68,7 +68,7 @@ function SectionPage({ title }) {
                 <div className="space-y-24">
                   {aboutSections.map((section) => (
                     <div key={section.id} className="space-y-8 max-w-5xl">
-                      <h2 className="text-2xl sm:text-4xl font-black text-black border-l-8 border-black pl-8 tracking-tight">
+                      <h2 className="text-2xl sm:text-4xl font-black text-black border-l-8 border-black pl-8 tracking-tight break-words">
                         {section[lang]?.title || section.en?.title}
                       </h2>
                       <div 

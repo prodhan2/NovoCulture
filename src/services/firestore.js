@@ -463,3 +463,30 @@ export async function updateFormSubmissionStatus(id, status) {
   if (!db) throw new Error("Firestore not initialized");
   await setDoc(doc(db, "formSubmissions", id), { status }, { merge: true });
 }
+
+// Reviews
+export async function addReview(data) {
+  if (!db) throw new Error("Firestore not initialized");
+  const ref = await addDoc(collection(db, "reviews"), {
+    ...data,
+    created_at: new Date().toISOString()
+  });
+  return ref.id;
+}
+
+export async function getReviews() {
+  if (!db) return [];
+  try {
+    const q = query(collection(db, "reviews"), orderBy("created_at", "desc"));
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
+    return [];
+  }
+}
+
+export async function deleteReview(id) {
+  if (!db) throw new Error("Firestore not initialized");
+  await deleteDoc(doc(db, "reviews", id));
+}

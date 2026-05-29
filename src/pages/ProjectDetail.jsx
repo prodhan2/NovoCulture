@@ -125,7 +125,7 @@ function ProjectDetail() {
             )}
           </div>
 
-          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-black tracking-tight leading-tight max-w-4xl">
+          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-black tracking-tight leading-tight max-w-4xl break-words">
             {title}
           </h1>
 

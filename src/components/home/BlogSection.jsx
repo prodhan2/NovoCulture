@@ -1,18 +1,29 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { getHeroUpdates } from "../../services/firestore";
+import { getHeroUpdates, getSettings } from "../../services/firestore";
 import { Calendar, FileText, ChevronRight } from "lucide-react";
 
 function BlogSection() {
   const { t, i18n } = useTranslation();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [marqueeText, setMarqueeText] = useState("");
   const lang = i18n.language.startsWith("bn") ? "bn" : "en";
+
+  const scrollRef = useRef(null);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     async function load() {
       try {
+        // Load settings for marquee
+        const s = await getSettings();
+        if (s) {
+          const mText = s[`marqueeText${lang.charAt(0).toUpperCase() + lang.slice(1)}`] || t("marquee_text", "NovoCulture: Discover. Support. Inspire. • Join our mission to empower communities through education and culture • Support our latest outreach programs • ");
+          setMarqueeText(mText);
+        }
+
         const all = await getHeroUpdates();
         const filtered = all.filter(u => u.category === "posts").slice(0, 3);
         setPosts(filtered);
@@ -23,13 +34,45 @@ function BlogSection() {
       }
     }
     load();
-  }, []);
+  }, [lang]);
+
+  // Auto-scroll logic
+  useEffect(() => {
+    const scrollContainer = scrollRef.current;
+    if (!scrollContainer || loading || isPaused || posts.length === 0) return;
+
+    let animationFrameId;
+    const scroll = () => {
+      if (scrollContainer) {
+        scrollContainer.scrollLeft += 0.8;
+        if (scrollContainer.scrollLeft >= scrollContainer.scrollWidth / 2) {
+          scrollContainer.scrollLeft = 0;
+        }
+      }
+      animationFrameId = requestAnimationFrame(scroll);
+    };
+
+    animationFrameId = requestAnimationFrame(scroll);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [loading, isPaused, posts]);
 
   if (loading) return null;
   if (posts.length === 0) return null;
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-12 sm:px-8 lg:px-16">
+    <>
+      {/* Marquee Text - Full Width */}
+      <div className="w-full bg-white py-4 overflow-hidden border-y-2 border-[var(--accent-terracotta)] mb-12 shadow-sm">
+        <div className="flex whitespace-nowrap animate-marquee-scroll">
+          {[1, 2, 3, 4].map((i) => (
+            <span key={i} className="text-xs sm:text-sm font-bold text-black px-4 font-bengali uppercase tracking-wider">
+              {marqueeText}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-8 lg:px-16">
       <div className="mb-8 flex items-center justify-between gap-4 border-b-2 border-black pb-6">
         <div>
           <p className="text-[10px] font-black uppercase tracking-[0.25em] text-black/40 mb-1">
@@ -41,7 +84,7 @@ function BlogSection() {
         </div>
         <Link 
           to="/posts"
-          className="flex items-center gap-2 rounded-lg sm:rounded-xl bg-black px-3 sm:px-6 py-2 sm:py-3 text-[10px] sm:text-[10px] font-black uppercase tracking-widest text-white hover:opacity-80 transition-all shrink-0 shadow-lg shadow-black/20"
+          className="flex items-center gap-2 rounded-lg sm:rounded-xl bg-black px-3 sm:px-6 py-2 sm:py-3 text-[10px] sm:text-[10px] font-black uppercase tracking-widest text-white hover:opacity-80 transition-all shrink-0 shadow-lg shadow-black/20 btn-glow"
         >
           <span className="hidden sm:inline">{t("view_all", "সবগুলো দেখুন")}</span>
           <span className="sm:hidden">সবগুলো</span>
@@ -49,13 +92,20 @@ function BlogSection() {
         </Link>
       </div>
 
-      <div className="-mx-4 sm:-mx-6 lg:-mx-8 overflow-x-auto hide-scrollbar cursor-grab active:cursor-grabbing">
-        <div className="animate-infinite-scroll flex gap-6 py-4 hover:[animation-play-state:paused] active:[animation-play-state:paused]">
+      <div 
+        ref={scrollRef}
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+        onTouchStart={() => setIsPaused(true)}
+        onTouchEnd={() => setIsPaused(false)}
+        className="-mx-4 sm:-mx-6 lg:-mx-8 overflow-x-auto hide-scrollbar cursor-grab active:cursor-grabbing select-none"
+      >
+        <div className="flex gap-6 py-4 px-4 w-max">
           {(posts.length > 0 ? [...posts, ...posts] : []).map((post, idx) => (
             <Link
               key={`${post.id}-${idx}`}
               to={`/posts/${post.id}`}
-              className="w-[280px] sm:w-[320px] group block rounded-2xl bg-white p-4 sm:p-5 shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl shrink-0"
+              className="w-[240px] sm:w-[320px] group block rounded-2xl bg-white p-4 sm:p-5 shadow-sm transition-all hover:shadow-xl shrink-0 hover-glow-border border-2 border-transparent"
             >
               <div className="aspect-[16/9] rounded-xl overflow-hidden mb-4 relative">
                 {post.image ? (
@@ -89,7 +139,8 @@ function BlogSection() {
         </div>
       </div>
     </section>
-  );
+  </>
+);
 }
 
 export default BlogSection;

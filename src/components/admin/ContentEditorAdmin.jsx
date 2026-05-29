@@ -24,6 +24,7 @@ export default function ContentEditorAdmin() {
   const [content, setContent] = useState({
     title: "",
     category: "sampritik",
+    projectStatus: "ongoing",
     image: "",
     body: ""
   });
@@ -95,6 +96,7 @@ export default function ContentEditorAdmin() {
     try {
       const payload = {
         category: content.category,
+        projectStatus: content.category === "projects" ? content.projectStatus : null,
         image: content.image,
         bn: {
           title: content.title,
@@ -111,6 +113,7 @@ export default function ContentEditorAdmin() {
       setContent({
         title: "",
         category: "sampritik",
+        projectStatus: "ongoing",
         image: "",
         body: ""
       });
@@ -125,7 +128,10 @@ export default function ContentEditorAdmin() {
 
   const handleEdit = (item) => {
     setEditingId(item.id);
-    setEditData({ ...item });
+    setEditData({ 
+      ...item, 
+      projectStatus: item.projectStatus || "ongoing" 
+    });
   };
 
   const handleSaveEdit = async () => {
@@ -234,6 +240,33 @@ export default function ContentEditorAdmin() {
                 </select>
               </div>
             </div>
+
+            {/* Project Status Selector - Only shown if category is projects */}
+            {content.category === "projects" && (
+              <div className="grid grid-cols-1 md:grid-cols-4 items-start gap-4 md:gap-12 group animate-in slide-in-from-top-4 duration-300">
+                <label className="text-base sm:text-lg font-black text-black uppercase tracking-tight md:pt-2">
+                  প্রজেক্ট স্ট্যাটাস
+                </label>
+                <div className="md:col-span-3 flex gap-4">
+                  {[
+                    { id: "ongoing", label: "চলমান" },
+                    { id: "implemented", label: "বাস্তবায়িত" }
+                  ].map((status) => (
+                    <button
+                      key={status.id}
+                      onClick={() => setContent(prev => ({ ...prev, projectStatus: status.id }))}
+                      className={`flex-1 py-3 rounded-xl border-2 font-black transition-all ${
+                        content.projectStatus === status.id
+                          ? "bg-[var(--accent-terracotta)] text-white border-[var(--accent-terracotta)] shadow-lg"
+                          : "bg-white text-black border-black hover:border-[var(--accent-terracotta)]"
+                      }`}
+                    >
+                      {status.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Image Upload - Horizontal Style */}
             <div className="grid grid-cols-1 md:grid-cols-4 items-start gap-4 md:gap-12 group">
@@ -411,6 +444,30 @@ export default function ContentEditorAdmin() {
                       </div>
                     </div>
 
+                    {editData.category === "projects" && (
+                      <div className="grid grid-cols-1 md:grid-cols-4 items-start gap-4 md:gap-12 group">
+                        <label className="text-base font-black text-black uppercase tracking-tight md:pt-2">প্রজেক্ট স্ট্যাটাস</label>
+                        <div className="md:col-span-3 flex gap-4">
+                          {[
+                            { id: "ongoing", label: "চলমান" },
+                            { id: "implemented", label: "বাস্তবায়িত" }
+                          ].map((status) => (
+                            <button
+                              key={status.id}
+                              onClick={() => setEditData({ ...editData, projectStatus: status.id })}
+                              className={`flex-1 py-3 rounded-xl border-2 font-black transition-all ${
+                                editData.projectStatus === status.id
+                                  ? "bg-[var(--accent-terracotta)] text-white border-[var(--accent-terracotta)] shadow-lg"
+                                  : "bg-white text-black border-black hover:border-[var(--accent-terracotta)]"
+                              }`}
+                            >
+                              {status.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
                     <div className="grid grid-cols-1 md:grid-cols-4 items-start gap-4 md:gap-12 group">
                       <label className="text-base font-black text-black uppercase tracking-tight md:pt-2">শিরোনাম</label>
                       <div className="md:col-span-3">
@@ -457,10 +514,19 @@ export default function ContentEditorAdmin() {
                     {item.image && (
                       <div className="h-20 w-32 rounded-2xl overflow-hidden shrink-0 border-2 border-black relative group-hover:border-[var(--accent-terracotta)]/50 transition-colors">
                         <img src={item.image} alt="" className="h-full w-full object-cover transition duration-500 group-hover:scale-110" />
-                        <div className="absolute top-1 left-1">
-                          <span className="rounded-lg bg-[var(--accent-terracotta)] text-white px-2 py-0.5 text-[7px] font-black uppercase tracking-widest">
+                        <div className="absolute top-1 left-1 flex flex-col gap-1">
+                          <span className="rounded-lg bg-[var(--accent-terracotta)] text-white px-2 py-0.5 text-[7px] font-black uppercase tracking-widest w-fit">
                             {categories.find(c => c.id === item.category)?.label}
                           </span>
+                          {item.category === "projects" && (
+                            <span className={`rounded-lg px-2 py-0.5 text-[7px] font-black uppercase tracking-widest w-fit border ${
+                              item.projectStatus === "implemented" 
+                                ? "bg-green-500 text-white border-green-500" 
+                                : "bg-blue-500 text-white border-blue-500"
+                            }`}>
+                              {item.projectStatus === "implemented" ? "বাস্তবায়িত" : "চলমান"}
+                            </span>
+                          )}
                         </div>
                       </div>
                     )}

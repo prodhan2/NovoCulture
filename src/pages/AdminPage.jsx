@@ -14,6 +14,7 @@ import AboutAdmin from "../components/admin/AboutAdmin";
 import DonationsAdmin from "../components/admin/DonationsAdmin";
 import UsersAdmin from "../components/admin/UsersAdmin";
 import SMSAdmin from "../components/admin/SMSAdmin";
+import ReviewsAdmin from "../components/admin/ReviewsAdmin";
 
 export default function AdminPage() {
   const { t, i18n } = useTranslation();
@@ -128,6 +129,11 @@ export default function AdminPage() {
               label="SMS"
             />
             <TabButton 
+              active={tab === "reviews"} 
+              onClick={() => handleTabChange("reviews")}
+              label="রিভিউ"
+            />
+            <TabButton 
               active={tab === "forms"} 
               onClick={() => handleTabChange("forms")}
               label={t("admin_panel.forms", "ফর্ম")}
@@ -161,6 +167,8 @@ export default function AdminPage() {
           <UsersAdmin />
         ) : tab === "sms" ? (
           <SMSAdmin />
+        ) : tab === "reviews" ? (
+          <ReviewsAdmin />
         ) : tab === "forms" ? (
           <FormCustomizationAdmin />
         ) : tab === "contact" ? (

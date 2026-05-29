@@ -174,7 +174,7 @@ function Header({ isSidebarHidden, toggleSidebar }) {
               closeDrawer();
               handleProfileClick();
             }}
-            className="flex items-center gap-3 w-full p-2 rounded-xl hover:bg-[var(--accent-terracotta)]/5 transition"
+            className="flex items-center gap-3 w-full p-2 rounded-xl hover:bg-[var(--accent-terracotta)]/5 transition btn-glow"
           >
             <div className="h-10 w-10 rounded-full border-2 border-[var(--accent-terracotta)] bg-white flex items-center justify-center overflow-hidden shrink-0">
               {user?.photoURL ? (
@@ -242,7 +242,7 @@ function Header({ isSidebarHidden, toggleSidebar }) {
           <Link
             to="/donate"
             onClick={closeDrawer}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent-terracotta)] px-5 py-3.5 text-sm font-black text-white transition hover:bg-[var(--accent-terracotta-dark)] border-2 border-[var(--accent-terracotta)]"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--accent-terracotta)] px-5 py-3.5 text-sm font-black text-white transition hover:bg-[var(--accent-terracotta-dark)] border-2 border-[var(--accent-terracotta)] btn-glow"
           >
             {t("donate")}
             <ArrowRight className="h-4 w-4" />
@@ -293,8 +293,13 @@ function Header({ isSidebarHidden, toggleSidebar }) {
               </nav>
             )}
 
-            <div className="flex items-center justify-end gap-4 sm:gap-6">
-              <div className="flex items-center gap-3 shrink-0">
+            <div className="flex items-center justify-end gap-2 sm:gap-6">
+              <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+                {/* GTranslate Wrapper - Desktop */}
+                <div className="hidden lg:flex items-center">
+                  <div className="gtranslate_wrapper"></div>
+                </div>
+
                 {/* Notice Icon (Desktop Only) */}
                 <Link
                   to="/notices"
@@ -305,22 +310,12 @@ function Header({ isSidebarHidden, toggleSidebar }) {
                   <span className="absolute top-0 right-0 h-3 w-3 rounded-full bg-red-500 border-2 border-white" />
                 </Link>
 
-                {/* Language toggle (desktop) */}
-                <div className="hidden items-center lg:flex">
-                  <button
-                    type="button"
-                    onClick={toggleLanguage}
-                    className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-[var(--accent-terracotta)] bg-white text-[var(--text-brown)] transition hover:bg-[var(--accent-terracotta)]/10 hover:scale-110 shadow-sm font-black text-xs"
-                    aria-label="Toggle Language"
-                  >
-                    {currentLang === "bn" ? "EN" : "বাং"}
-                  </button>
-                </div>
+                {/* Language toggle (desktop) - REMOVED for GTranslate */}
 
                 {/* Donate (desktop) */}
                 <Link
                   to="/donation"
-                  className="hidden lg:inline-flex items-center gap-2.5 rounded-xl bg-[var(--accent-terracotta)] px-7 py-3 text-sm xl:text-base font-black text-white shadow-md transition-all hover:bg-[var(--accent-terracotta-dark)] hover:scale-105 hover:shadow-lg border-2 border-[var(--accent-terracotta)]"
+                  className="hidden lg:inline-flex items-center gap-2.5 rounded-xl bg-[var(--accent-terracotta)] px-7 py-3 text-sm xl:text-base font-black text-white shadow-md transition-all hover:bg-[var(--accent-terracotta-dark)] hover:scale-105 hover:shadow-lg border-2 border-[var(--accent-terracotta)] btn-glow"
                 >
                   {t("donate")}
                   <ArrowRight className="h-5 w-5" />
@@ -329,16 +324,6 @@ function Header({ isSidebarHidden, toggleSidebar }) {
             </div>
 
             <div className="flex items-center gap-2 shrink-0 lg:hidden">
-              {/* Language toggle (mobile) */}
-              <button
-                type="button"
-                onClick={toggleLanguage}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-[color:var(--tan-secondary)] bg-[var(--bg-cream)] text-[var(--text-brown)] transition hover:bg-[var(--bg-cream-soft)] font-black text-[10px]"
-                aria-label="Toggle Language"
-              >
-                {currentLang === "bn" ? "EN" : "বাং"}
-              </button>
-
               {/* App Drawer Button (Visible only on mobile/tablet) */}
               <button
                 type="button"

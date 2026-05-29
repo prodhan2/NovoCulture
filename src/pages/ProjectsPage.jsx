@@ -9,6 +9,7 @@ function ProjectsPage() {
   const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("ongoing");
   const lang = i18n.language.startsWith("bn") ? "bn" : "en";
 
   useEffect(() => {
@@ -49,22 +50,48 @@ function ProjectsPage() {
         </div>
       </div>
 
+      {/* Tabs */}
+      <div className="w-full px-4 sm:px-8 lg:px-16 pt-8">
+        <div className="flex items-center gap-2 sm:gap-4 border-b-2 border-black/5">
+          <button
+            onClick={() => setActiveTab("ongoing")}
+            className={`pb-4 px-2 text-sm sm:text-base font-black uppercase tracking-widest transition-all relative ${
+              activeTab === "ongoing" ? "text-black" : "text-black/30 hover:text-black/50"
+            }`}
+          >
+            {t("ongoing_projects", "চলমান কার্যক্রম")}
+            {activeTab === "ongoing" && <div className="absolute bottom-0 left-0 w-full h-1 bg-black rounded-full" />}
+          </button>
+          <button
+            onClick={() => setActiveTab("implemented")}
+            className={`pb-4 px-2 text-sm sm:text-base font-black uppercase tracking-widest transition-all relative ${
+              activeTab === "implemented" ? "text-black" : "text-black/30 hover:text-black/50"
+            }`}
+          >
+            {t("implemented_projects", "বাস্তবায়িত কার্যক্রম")}
+            {activeTab === "implemented" && <div className="absolute bottom-0 left-0 w-full h-1 bg-black rounded-full" />}
+          </button>
+        </div>
+      </div>
+
       {/* Content - Full Width & Compact List View */}
       <div className="w-full px-4 sm:px-8 lg:px-16 py-6 sm:py-12">
         {loading ? (
           <div className="flex h-40 items-center justify-center">
             <Loader2 className="h-8 w-8 animate-spin text-black" />
           </div>
-        ) : projects.length === 0 ? (
+        ) : projects.filter(p => (p.projectStatus || "ongoing") === activeTab).length === 0 ? (
           <div className="w-full rounded-3xl border-2 border-dashed border-black p-12 text-center">
             <AlertCircle className="mx-auto h-12 w-12 text-black/10 mb-4" />
             <p className="text-lg font-black text-black/40 tracking-tight">
-              {t("no_content_available", "এই মুহূর্তে কোনো প্রজেক্ট পাওয়া যায়নি।")}
+              {t("no_content_available", "এই মুহূর্তে কোনো কার্যক্রম পাওয়া যায়নি।")}
             </p>
           </div>
         ) : (
           <div className="divide-y-2 divide-black/10">
-            {projects.map((project, index) => {
+            {projects
+              .filter(p => (p.projectStatus || "ongoing") === activeTab)
+              .map((project, index) => {
               const title = project.bn?.title || project.en?.title || "";
               const content = project.bn?.content || project.en?.content || "";
               

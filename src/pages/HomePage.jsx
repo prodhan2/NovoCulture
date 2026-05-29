@@ -1,6 +1,7 @@
 import JoinSection from "../components/home/JoinSection.jsx";
 import HeroSection from "../components/home/HeroSection.jsx";
 import BlogSection from "../components/home/BlogSection.jsx";
+import ReviewSection from "../components/home/ReviewSection.jsx";
 
 function HomePage() {
   return (
@@ -8,6 +9,7 @@ function HomePage() {
       <HeroSection />
       <BlogSection />
       <JoinSection />
+      <ReviewSection />
     </>
   );
 }

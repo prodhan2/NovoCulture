@@ -59,7 +59,7 @@ function HeroSection() {
             <div className="flex flex-row items-center justify-center lg:justify-start gap-3 sm:gap-6">
               <Link 
                 to="/about"
-                className="flex-1 sm:flex-none px-6 sm:px-10 py-3 sm:py-4 bg-[var(--accent-terracotta)] text-white text-sm sm:text-base font-black rounded-xl sm:rounded-2xl transition-all hover:bg-[var(--accent-terracotta-dark)] hover:scale-105 active:scale-95 shadow-xl shadow-orange-900/20 flex items-center justify-center whitespace-nowrap"
+                className="flex-1 sm:flex-none px-6 sm:px-10 py-3 sm:py-4 bg-[var(--accent-terracotta)] text-white text-sm sm:text-base font-black rounded-xl sm:rounded-2xl transition-all hover:bg-[var(--accent-terracotta-dark)] hover:scale-105 active:scale-95 shadow-xl shadow-orange-900/20 flex items-center justify-center whitespace-nowrap btn-glow"
               >
                 আরও জানুন
               </Link>

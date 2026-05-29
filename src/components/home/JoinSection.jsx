@@ -20,8 +20,16 @@ function JoinSection() {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [projects, setProjects] = useState([]);
   const [donations, setDonations] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState("ongoing");
+
+  const scrollRef1 = useRef(null);
+  const scrollRef2 = useRef(null);
+  const [isPaused1, setIsPaused1] = useState(false);
+  const [isPaused2, setIsPaused2] = useState(false);
 
   const lang = i18n.language.startsWith("bn") ? "bn" : "en";
+
+  const filteredProjects = projects.filter(p => (p.projectStatus || "ongoing") === selectedStatus);
 
   useEffect(() => {
     async function loadData() {
@@ -45,6 +53,34 @@ function JoinSection() {
     loadData();
   }, []);
 
+  // Auto-scroll logic for both sections
+  useEffect(() => {
+    const containers = [
+      { ref: scrollRef1, paused: isPaused1, data: filteredProjects },
+      { ref: scrollRef2, paused: isPaused2, data: donations }
+    ];
+
+    const animationIds = [];
+
+    containers.forEach((item, index) => {
+      if (!item.ref.current || item.paused || item.data.length === 0) return;
+
+      const scrollContainer = item.ref.current;
+      const scroll = () => {
+        if (scrollContainer) {
+          scrollContainer.scrollLeft += 0.8; // Slower for readability
+          if (scrollContainer.scrollLeft >= scrollContainer.scrollWidth / 2) {
+            scrollContainer.scrollLeft = 0;
+          }
+        }
+        animationIds[index] = requestAnimationFrame(scroll);
+      };
+      animationIds[index] = requestAnimationFrame(scroll);
+    });
+
+    return () => animationIds.forEach(id => cancelAnimationFrame(id));
+  }, [filteredProjects, donations, isPaused1, isPaused2]);
+
   const nextVideo = () => {
     setCurrentVideoIndex((prev) => (prev + 1) % videoUrls.length);
   };
@@ -55,18 +91,37 @@ function JoinSection() {
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-      {/* Projects Update Section (Ongoing Activities) */}
-      <div id="ongoing-activities" className="mb-12 sm:mb-20 scroll-mt-20 overflow-hidden">
-        <div className="flex items-center justify-between mb-6 sm:mb-10 gap-4">
-          <div className="text-left">
-            <h2 className="text-xl sm:text-3xl font-black text-[var(--text-brown-strong)] mb-1 sm:mb-4">
-              চলমান কার্যক্রমসমূহ
-            </h2>
+      {/* Projects Update Section (Ongoing & Implemented) */}
+        <div id="ongoing-activities" className="mb-12 sm:mb-20 scroll-mt-20 overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-10 gap-6">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setSelectedStatus("ongoing")}
+                className={`px-4 sm:px-6 py-2 sm:py-3 rounded-xl text-sm sm:text-lg font-black transition-all border-2 ${
+                  selectedStatus === "ongoing"
+                    ? "bg-[var(--accent-terracotta)] text-white border-[var(--accent-terracotta)] shadow-lg"
+                    : "bg-white text-[var(--text-brown-strong)] border-black/10 hover:border-[var(--accent-terracotta)]"
+                }`}
+              >
+                চলমান কার্যক্রম
+              </button>
+              <button
+                onClick={() => setSelectedStatus("implemented")}
+                className={`px-4 sm:px-6 py-2 sm:py-3 rounded-xl text-sm sm:text-lg font-black transition-all border-2 ${
+                  selectedStatus === "implemented"
+                    ? "bg-[var(--accent-terracotta)] text-white border-[var(--accent-terracotta)] shadow-lg"
+                    : "bg-white text-[var(--text-brown-strong)] border-black/10 hover:border-[var(--accent-terracotta)]"
+                }`}
+              >
+                বাস্তবায়িত কার্যক্রম
+              </button>
+            </div>
             <div className="h-1 w-12 sm:h-1.5 sm:w-24 bg-[var(--accent-terracotta)] rounded-full" />
           </div>
           <button
             onClick={() => navigate("/projects")}
-            className="flex items-center gap-2 rounded-lg sm:rounded-xl bg-[var(--accent-terracotta)] px-3 sm:px-6 py-2 sm:py-3 text-[10px] sm:text-[11px] font-bold text-white transition-all hover:bg-[var(--accent-terracotta-dark)] hover:scale-105 active:scale-95 shadow-lg shadow-orange-500/20 shrink-0"
+            className="flex items-center gap-2 rounded-lg sm:rounded-xl bg-[var(--accent-terracotta)] px-3 sm:px-6 py-2 sm:py-3 text-[10px] sm:text-[11px] font-bold text-white transition-all hover:bg-[var(--accent-terracotta-dark)] hover:scale-105 active:scale-95 shadow-lg shadow-orange-500/20 shrink-0 self-end sm:self-center"
           >
             <span className="hidden sm:inline">সবগুলো কার্যক্রম দেখুন</span>
             <span className="sm:hidden">সবগুলো</span>
@@ -74,47 +129,61 @@ function JoinSection() {
           </button>
         </div>
         
-        <div className="-mx-4 sm:-mx-6 lg:-mx-8 overflow-x-auto hide-scrollbar cursor-grab active:cursor-grabbing">
-          <div className="animate-infinite-scroll flex gap-6 py-4 hover:[animation-play-state:paused] active:[animation-play-state:paused]">
-            {(projects.length > 0 ? [...projects, ...projects] : []).map((proj, idx) => {
-              const title = proj.bn?.title || proj.en?.title || "";
-              const desc = proj.bn?.content || proj.en?.content || "";
-              const image = proj.image || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=800&auto=format&fit=crop";
+        <div 
+          ref={scrollRef1}
+          onMouseEnter={() => setIsPaused1(true)}
+          onMouseLeave={() => setIsPaused1(false)}
+          onTouchStart={() => setIsPaused1(true)}
+          onTouchEnd={() => setIsPaused1(false)}
+          className="-mx-4 sm:-mx-6 lg:-mx-8 overflow-x-auto hide-scrollbar cursor-grab active:cursor-grabbing select-none"
+        >
+          <div className="flex gap-6 py-4 px-4 w-max">
+            {filteredProjects.length > 0 ? (
+              [...filteredProjects, ...filteredProjects].map((proj, idx) => {
+                const title = proj.bn?.title || proj.en?.title || "";
+                const desc = proj.bn?.content || proj.en?.content || "";
+                const image = proj.image || "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=800&auto=format&fit=crop";
 
-              return (
-                <div key={`${proj.id}-${idx}`} className="w-[280px] sm:w-[320px] flex flex-col bg-white rounded-2xl sm:rounded-3xl shadow-lg overflow-hidden transition-all hover:shadow-xl shrink-0">
-                  <div className="aspect-[16/10] w-full overflow-hidden">
-                    <img 
-                      src={image} 
-                      alt={title} 
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                  </div>
-                  <div className="p-4 sm:p-6 flex flex-col flex-1">
-                    <div className="flex items-center gap-2 text-[var(--accent-terracotta)] mb-2">
-                      <Layout className="h-3 w-3" />
-                      <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest">
-                        {t("tabs.projects", "প্রকল্প")}
-                      </span>
+                return (
+                  <div key={`${proj.id}-${idx}`} className="w-[240px] sm:w-[320px] flex flex-col bg-white rounded-2xl sm:rounded-3xl shadow-lg overflow-hidden transition-all hover:shadow-xl shrink-0 hover-glow-border border-2 border-transparent">
+                    <div className="aspect-[16/10] w-full overflow-hidden">
+                      <img 
+                        src={image} 
+                        alt={title} 
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
                     </div>
-                    <h4 className="text-base sm:text-lg font-black text-[var(--text-brown-strong)] mb-2 leading-tight line-clamp-1">
-                      {title}
-                    </h4>
-                    <p className="text-[11px] sm:text-[12px] text-[var(--text-brown)]/60 font-medium leading-relaxed mb-4 line-clamp-2">
-                      {desc.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ').replace(/[#*`]/g, '')}
-                    </p>
-                    <div className="mt-auto">
-                      <button 
-                        onClick={() => navigate(`/projects/${proj.id}`)}
-                        className="w-full rounded-xl bg-[var(--accent-terracotta)] py-2.5 sm:py-3 text-xs sm:text-xs font-bold text-white transition-all hover:bg-[var(--accent-terracotta-dark)] hover:shadow-lg active:scale-95 shadow-md shadow-orange-900/10"
-                      >
-                        বিস্তারিত দেখুন
-                      </button>
+                    <div className="p-4 sm:p-6 flex flex-col flex-1">
+                      <div className="flex items-center gap-2 text-[var(--accent-terracotta)] mb-2">
+                        <Layout className="h-3 w-3" />
+                        <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest">
+                          {t("tabs.projects", "প্রকল্প")}
+                        </span>
+                      </div>
+                      <h4 className="text-base sm:text-lg font-black text-[var(--text-brown-strong)] mb-2 leading-tight line-clamp-1">
+                        {title}
+                      </h4>
+                      <div 
+                        className="text-[11px] sm:text-[12px] text-[var(--text-brown)]/60 font-medium leading-relaxed mb-4 line-clamp-2"
+                        dangerouslySetInnerHTML={{ __html: desc.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ').replace(/[#*`]/g, '') }}
+                      />
+                      <div className="mt-auto">
+                        <button 
+                          onClick={() => navigate(`/projects/${proj.id}`)}
+                          className="w-full rounded-xl bg-[var(--accent-terracotta)] py-2.5 sm:py-3 text-xs sm:text-xs font-bold text-white transition-all hover:bg-[var(--accent-terracotta-dark)] hover:shadow-lg active:scale-95 shadow-md shadow-orange-900/10"
+                        >
+                          বিস্তারিত দেখুন
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })
+            ) : (
+              <div className="w-full py-12 px-4 text-center">
+                <p className="text-[var(--text-brown)]/40 font-bold italic">এই ক্যাটাগরিতে কোনো কার্যক্রম নেই</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -139,15 +208,22 @@ function JoinSection() {
             </button>
           </div>
           
-          <div className="-mx-4 sm:-mx-6 lg:-mx-8 overflow-x-auto hide-scrollbar cursor-grab active:cursor-grabbing">
-            <div className="animate-infinite-scroll flex gap-6 py-4 hover:[animation-play-state:paused] active:[animation-play-state:paused]">
+          <div 
+            ref={scrollRef2}
+            onMouseEnter={() => setIsPaused2(true)}
+            onMouseLeave={() => setIsPaused2(false)}
+            onTouchStart={() => setIsPaused2(true)}
+            onTouchEnd={() => setIsPaused2(false)}
+            className="-mx-4 sm:-mx-6 lg:-mx-8 overflow-x-auto hide-scrollbar cursor-grab active:cursor-grabbing select-none"
+          >
+            <div className="flex gap-6 py-4 px-4 w-max">
               {(donations.length > 0 ? [...donations, ...donations] : []).map((fund, idx) => {
                 const title = fund.bn?.title || fund.en?.title || "";
                 const desc = fund.bn?.content || fund.en?.content || "";
                 const image = fund.image || "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=800&auto=format&fit=crop";
 
                 return (
-                  <div key={`${fund.id}-${idx}`} className="w-[280px] sm:w-[320px] flex flex-col bg-white rounded-2xl sm:rounded-3xl shadow-lg overflow-hidden transition-all hover:shadow-xl shrink-0">
+                  <div key={`${fund.id}-${idx}`} className="w-[240px] sm:w-[320px] flex flex-col bg-white rounded-2xl sm:rounded-3xl shadow-lg overflow-hidden transition-all hover:shadow-xl shrink-0 hover-glow-border border-2 border-transparent">
                     <div className="aspect-[16/9] w-full overflow-hidden">
                       <img 
                         src={image} 

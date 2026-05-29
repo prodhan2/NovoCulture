@@ -9,6 +9,8 @@ export default function SettingsAdmin() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [apiKey, setApiKey] = useState("");
+  const [marqueeBn, setMarqueeBn] = useState("");
+  const [marqueeEn, setMarqueeEn] = useState("");
   const [message, setMessage] = useState({ type: "", text: "" });
 
   const adjustHeight = (e) => {
@@ -27,6 +29,12 @@ export default function SettingsAdmin() {
         
         if (settings?.beeImgApiKey) {
           setApiKey(settings.beeImgApiKey);
+        }
+        if (settings?.marqueeTextBn) {
+          setMarqueeBn(settings.marqueeTextBn);
+        }
+        if (settings?.marqueeTextEn) {
+          setMarqueeEn(settings.marqueeTextEn);
         }
       } catch (err) {
         console.error("Failed to load settings", err);
@@ -52,7 +60,9 @@ export default function SettingsAdmin() {
     setMessage({ type: "", text: "" });
     try {
       await setSettings({ 
-        beeImgApiKey: apiKey
+        beeImgApiKey: apiKey,
+        marqueeTextBn: marqueeBn,
+        marqueeTextEn: marqueeEn
       });
       
       setMessage({ type: "success", text: "সেটিংস সফলভাবে সেভ হয়েছে!" });
@@ -99,6 +109,42 @@ export default function SettingsAdmin() {
                 />
                 <p className="mt-2 text-[10px] font-black text-black uppercase tracking-[0.2em] italic">
                   সরাসরি ছবি আপলোডের জন্য প্রয়োজন। এই কী-টি গোপন রাখুন।
+                </p>
+              </div>
+            </div>
+
+            {/* Marquee Text Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-4 items-start gap-4 md:gap-12 group">
+              <label className="text-base sm:text-lg font-black text-black uppercase tracking-tight md:pt-2">
+                মারকুই টেক্সট (বাংলা)
+              </label>
+              <div className="md:col-span-3">
+                <textarea
+                  rows={2}
+                  value={marqueeBn}
+                  onInput={adjustHeight}
+                  onChange={(e) => setMarqueeBn(e.target.value)}
+                  placeholder="ব্যানারে প্রদর্শনের জন্য বাংলা টেক্সট লিখুন..."
+                  className="w-full rounded-xl border-2 border-[var(--accent-terracotta)] bg-white px-5 py-3 text-base font-bold focus:ring-4 focus:ring-[var(--accent-terracotta)]/10 outline-none transition-all text-black resize-none placeholder:text-black/20 shadow-sm min-h-[80px]"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-4 items-start gap-4 md:gap-12 group">
+              <label className="text-base sm:text-lg font-black text-black uppercase tracking-tight md:pt-2">
+                Marquee Text (English)
+              </label>
+              <div className="md:col-span-3">
+                <textarea
+                  rows={2}
+                  value={marqueeEn}
+                  onInput={adjustHeight}
+                  onChange={(e) => setMarqueeEn(e.target.value)}
+                  placeholder="Enter English text for the marquee..."
+                  className="w-full rounded-xl border-2 border-[var(--accent-terracotta)] bg-white px-5 py-3 text-base font-bold focus:ring-4 focus:ring-[var(--accent-terracotta)]/10 outline-none transition-all text-black resize-none placeholder:text-black/20 shadow-sm min-h-[80px]"
+                />
+                <p className="mt-2 text-[10px] font-black text-black uppercase tracking-[0.2em] italic">
+                  ওয়েবসাইটের টপ ব্যানারে এই টেক্সটটি স্ক্রল করবে।
                 </p>
               </div>
             </div>

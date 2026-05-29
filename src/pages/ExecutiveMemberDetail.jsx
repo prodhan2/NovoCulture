@@ -92,7 +92,7 @@ export default function ExecutiveMemberDetail() {
             {/* Right Side: Others */}
             <div className="flex-1 min-w-0 text-center sm:text-left space-y-6">
               <div>
-                <h2 className="text-3xl sm:text-5xl font-black text-black tracking-tighter leading-none mb-4">
+                <h2 className="text-3xl sm:text-5xl font-black text-black tracking-tighter leading-none mb-4 break-words">
                   {member.userName}
                 </h2>
                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3">
@@ -101,9 +101,9 @@ export default function ExecutiveMemberDetail() {
                     <span>{member.position}</span>
                   </div>
                   {member.userEmail && (
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-black font-black text-[10px] sm:text-xs uppercase tracking-widest border-2 border-black">
-                      <Mail className="h-3.5 w-3.5" />
-                      <span className="truncate max-w-[150px] sm:max-w-none">{member.userEmail}</span>
+                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-black font-black text-[10px] sm:text-xs uppercase tracking-widest border-2 border-black max-w-full">
+                      <Mail className="h-3.5 w-3.5 shrink-0" />
+                      <span className="break-all">{member.userEmail}</span>
                     </div>
                   )}
                 </div>
